@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>喜欢的一些话</title>
+    <url>/posts/1527653848/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>喜欢的话</p>
+</blockquote>
+<span id="more"></span>
+<ol>
+<li>以其不争，故天下莫能与之争</li>
+<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
+<li>大音希声  大美无言 大成若缺</li>
+<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
+<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
+<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
+<li>每一个问题，都是对你缺点的量身定做，逃避是没有用的，困难是客观的，问题是有解的</li>
+<li>对自己的可控的事，永远坚持；对于别人主导的事情，随时放弃；对于无能为力的事情，听天由命</li>
+</ol>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>生活</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>FigStep的论文阅读</title>
-    <url>/posts/3790135051.html</url>
+    <url>/posts/3790135051/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/12/01/hq9WksMYbzmgZe1.png" alt="image.png"></p>
 <blockquote>
 <p>FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts论文学习</p>
@@ -138,7 +164,7 @@
   </entry>
   <entry>
     <title>MM-SafetyBench的论文阅读</title>
-    <url>/posts/2910022633.html</url>
+    <url>/posts/2910022633/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
 <blockquote>
 <p>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models 论文学习</p>
@@ -271,32 +297,8 @@
       </tags>
   </entry>
   <entry>
-    <title>喜欢的一些话</title>
-    <url>/posts/1527653848.html</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
-<blockquote>
-<p>喜欢的话</p>
-</blockquote>
-<span id="more"></span>
-<ol>
-<li>以其不争，故天下莫能与之争</li>
-<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
-<li>大音希声  大美无言 大成若缺</li>
-<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
-<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
-<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
-</ol>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Visual Adversarial Examples的论文阅读</title>
-    <url>/posts/542407868.html</url>
+    <url>/posts/542407868/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
 <blockquote>
 <p>Visual Adversarial Examples Jailbreak Aligned Large Language Models 论文学习</p>
