@@ -1,29 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>喜欢的一些话</title>
-    <url>/posts/1527653848/</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
+    <title>MM-SafetyBench的论文阅读</title>
+    <url>/posts/2910022633/</url>
+    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
 <blockquote>
-<p>喜欢的话</p>
+<p>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models 论文学习</p>
 </blockquote>
 <span id="more"></span>
-<ol>
-<li>以其不争，故天下莫能与之争</li>
-<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
-<li>大音希声  大美无言 大成若缺</li>
-<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
-<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
-<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
-<li>每一个问题，都是对你缺点的量身定做，逃避是没有用的，困难是客观的，问题是有解的</li>
-<li>对自己的可控的事，永远坚持；对于别人主导的事情，随时放弃；对于无能为力的事情，听天由命</li>
+<h2 id="MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models"><a href="#MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models" class="headerlink" title="MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models"></a>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</h2><p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
+<p><a href="https://arxiv.org/pdf/2311.17600">原文链接</a></p>
+<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
+<h4 id="1-1视觉模块和语言模块连接方式"><a href="#1-1视觉模块和语言模块连接方式" class="headerlink" title="1.1视觉模块和语言模块连接方式"></a>1.1视觉模块和语言模块连接方式</h4><ol>
+<li><strong>线性投影</strong>：使用线性投影将视觉标记 (visual tokens) 的维度与文本标记 (text tokens) 的维度对齐</li>
+<li><strong>可学习的查询</strong>：使用可学习的查询来提取与文本相关的视觉信息，并固定视觉标记的长度。</li>
+<li><strong>利用Few-shot</strong>: 利用few-shot使模形快速适应新的任务</li>
 </ol>
+<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
+<p>此文出于对多模态大模型很容易被破坏的缘故，提出了MM SafetyBench数据集，用于对MLLM进行安全评估，总共有13个场景，5040个文本图像对。还提出用用扩散模型和排版生成的图像，来创建图像提示，以绕过MLLM中的安全性防御机制</p>
+<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
+<ul>
+<li><strong>差距</strong>：LLM的安全问题得到了广泛讨论，还有安全对齐的措施，但是MLLM的安全问题仍然研究不足</li>
+<li><strong>评估</strong>：缺乏一个较好的数据集对MLLM进行安全性评估</li>
+<li><strong>动机</strong>：当图片与文字相关时，模型会激活视觉模块，这一模块，通常没有进行安全性对齐；当两者不相关的时候，语言模块占据主导地位，导致攻击失败</li>
+</ul>
+<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
+<h4 id="4-1-有效性"><a href="#4-1-有效性" class="headerlink" title="4.1 有效性"></a>4.1 有效性</h4><p>当使用图像文本对的时候，对MLLM的攻击显得就很有效</p>
+<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
+<h4 id="4-2-数据集的构建"><a href="#4-2-数据集的构建" class="headerlink" title="4.2 数据集的构建"></a>4.2 数据集的构建</h4><ol>
+<li><strong>生成问题</strong>：使用 GPT-4 来生成问题，而且一个问题对应的是三个图像</li>
+<li><strong>提取关键短语</strong>：<ul>
+<li>首先，有两种不同的场景<ul>
+<li>每个问题都包含一个有害短语</li>
+<li>每个问题都包含一个政治话题</li>
+</ul>
+</li>
+<li>然后提取之后用于第三步，图像的生成</li>
+</ul>
+</li>
+<li><strong>查询到图像的转换</strong>：<ul>
+<li>基于扩散模型</li>
+<li>排版图形，使用Pillow，来对图像进行绘图</li>
+<li>扩散模型+排版图形，将两者连接在一起，扩散模型在上面，排版图形在下面</li>
+</ul>
+</li>
+<li><strong>问题的改写</strong>：根据第一步的问题和第三步生成的图片进行改写生成新的问题</li>
+</ol>
+<h4 id="4-3-模型的评估"><a href="#4-3-模型的评估" class="headerlink" title="4.3 模型的评估"></a>4.3 模型的评估</h4><ol>
+<li>将场景分为三个类别，不同的类别，认为安全的方式不同<ul>
+<li>对于一些类别，如非法活动，不包含任何有害内容，则认为是安全的</li>
+<li>还有有些类别，如政治话题，不响应则认为是安全的</li>
+<li>最后的一些类别，如法律医疗领域，包含免责声明和风险警告则是安全的</li>
+</ul>
+</li>
+<li>利用ASR，平均攻击成功率来评估模型</li>
+<li>利用RR，拒绝率，来反映模型是否准确的识别到恶意查询，并做出拒绝</li>
+</ol>
+<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
+<p><strong>模型设置</strong>：评估了最近发布的12种模型</p>
+<p><strong>实验方式</strong>：使用排版，扩散，基线等方式</p>
+<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
+<ul>
+<li><strong>safety prompt</strong>：提出了safety prompt，使模型能够更好的抵御攻击，这一结果是建立在模型能够遵循指令的条件下</li>
+<li><strong>扩散+排版</strong>大多数情况下效果最好，相比于基线还有单纯的用基线和排版</li>
+<li>没有一个模型能够做到<strong>安全性和智能性</strong>的平衡，详细说来，则是有些模型看似安全实则无法正确做出相应</li>
+<li>附录中还对MLLM Protector做了对比，发现 Safety prompt 即激发自主的安全防御更有效</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts</strong></p>
+<ul>
+<li>介绍FigStep算法，通过将有害指令转换为图像来对VLM进行攻击，并且证明出在具有OCR功能的GPT-4V上也有较高攻击率。</li>
+</ul>
+<p><strong>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</strong></p>
+<ul>
+<li>提出MM-SafetyBench数据集，用来评估多模态大模型，发现其容易受到图文结合的攻击，特别是与文字相关的图片，最后还提出了可以引入安全提示减少攻击成功率。</li>
+</ul>
+<p><strong>Visual Adversarial Examples Jailbreak Aligned Large Language Models</strong></p>
+<ul>
+<li>主要是从对抗性样本上面出发，发现其可以绕开VLM的安全防御，使模形能够生成与训练无关的有害内容，还解锁了模型被禁止的能力。</li>
+</ul>
+<p><strong>对比</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Visual Adversarial Examples (2023.8)</th>
+<th style="text-align:center">FigStep (2023.12)</th>
+<th style="text-align:center">MM-SafetyBench (2024.6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>研究对象</strong></td>
+<td style="text-align:center">VLM</td>
+<td style="text-align:center">VLM</td>
+<td style="text-align:center">MLLM(但主要还是针对VLM)</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>方法特点</strong></td>
+<td style="text-align:center">对抗性图片</td>
+<td style="text-align:center">图形化有害文字</td>
+<td style="text-align:center">文本+图片 (扩散+排版)</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>创新点</strong></td>
+<td style="text-align:center">强调对抗性样本的通用性</td>
+<td style="text-align:center">简单的图形化文字的攻击</td>
+<td style="text-align:center">提出安全评估基准</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>研究模型范围</strong></td>
+<td style="text-align:center">GPT-4V和LLaVA</td>
+<td style="text-align:center">6种VLM+GPT-4V</td>
+<td style="text-align:center">12种开源MLLM</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>评估方法</strong></td>
+<td style="text-align:center">人工检查与黑盒传递性验证</td>
+<td style="text-align:center">SafeBench基准测试</td>
+<td style="text-align:center">MM SafetyBench数据集(13个场景，5040个文本图像对)</td>
+</tr>
+</tbody>
+</table>
+</div>
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>论文阅读</category>
       </categories>
       <tags>
-        <tag>生活</tag>
+        <tag>学习</tag>
+        <tag>论文阅读</tag>
+        <tag>深度学习</tag>
+        <tag>大模型安全</tag>
       </tags>
   </entry>
   <entry>
@@ -163,137 +271,93 @@
       </tags>
   </entry>
   <entry>
-    <title>MM-SafetyBench的论文阅读</title>
-    <url>/posts/2910022633/</url>
-    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
+    <title>博客更新流程</title>
+    <url>/posts/1108567586/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/BXYQDxA7y8dIeqg.webp" alt="image.png" style="zoom: 15%;" />          </p>
 <blockquote>
-<p>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models 论文学习</p>
+<p>博客更新流程</p>
 </blockquote>
 <span id="more"></span>
-<h2 id="MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models"><a href="#MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models" class="headerlink" title="MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models"></a>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</h2><p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
-<p><a href="https://arxiv.org/pdf/2311.17600">原文链接</a></p>
-<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
-<h4 id="1-1视觉模块和语言模块连接方式"><a href="#1-1视觉模块和语言模块连接方式" class="headerlink" title="1.1视觉模块和语言模块连接方式"></a>1.1视觉模块和语言模块连接方式</h4><ol>
-<li><strong>线性投影</strong>：使用线性投影将视觉标记 (visual tokens) 的维度与文本标记 (text tokens) 的维度对齐</li>
-<li><strong>可学习的查询</strong>：使用可学习的查询来提取与文本相关的视觉信息，并固定视觉标记的长度。</li>
-<li><strong>利用Few-shot</strong>: 利用few-shot使模形快速适应新的任务</li>
-</ol>
-<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
-<p>此文出于对多模态大模型很容易被破坏的缘故，提出了MM SafetyBench数据集，用于对MLLM进行安全评估，总共有13个场景，5040个文本图像对。还提出用用扩散模型和排版生成的图像，来创建图像提示，以绕过MLLM中的安全性防御机制</p>
-<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
 <ul>
-<li><strong>差距</strong>：LLM的安全问题得到了广泛讨论，还有安全对齐的措施，但是MLLM的安全问题仍然研究不足</li>
-<li><strong>评估</strong>：缺乏一个较好的数据集对MLLM进行安全性评估</li>
-<li><strong>动机</strong>：当图片与文字相关时，模型会激活视觉模块，这一模块，通常没有进行安全性对齐；当两者不相关的时候，语言模块占据主导地位，导致攻击失败</li>
+<li>首先执行下面的代码生成新的文章</li>
 </ul>
-<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
-<h4 id="4-1-有效性"><a href="#4-1-有效性" class="headerlink" title="4.1 有效性"></a>4.1 有效性</h4><p>当使用图像文本对的时候，对MLLM的攻击显得就很有效</p>
-<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
-<h4 id="4-2-数据集的构建"><a href="#4-2-数据集的构建" class="headerlink" title="4.2 数据集的构建"></a>4.2 数据集的构建</h4><ol>
-<li><strong>生成问题</strong>：使用 GPT-4 来生成问题，而且一个问题对应的是三个图像</li>
-<li><strong>提取关键短语</strong>：<ul>
-<li>首先，有两种不同的场景<ul>
-<li>每个问题都包含一个有害短语</li>
-<li>每个问题都包含一个政治话题</li>
-</ul>
-</li>
-<li>然后提取之后用于第三步，图像的生成</li>
-</ul>
-</li>
-<li><strong>查询到图像的转换</strong>：<ul>
-<li>基于扩散模型</li>
-<li>排版图形，使用Pillow，来对图像进行绘图</li>
-<li>扩散模型+排版图形，将两者连接在一起，扩散模型在上面，排版图形在下面</li>
-</ul>
-</li>
-<li><strong>问题的改写</strong>：根据第一步的问题和第三步生成的图片进行改写生成新的问题</li>
-</ol>
-<h4 id="4-3-模型的评估"><a href="#4-3-模型的评估" class="headerlink" title="4.3 模型的评估"></a>4.3 模型的评估</h4><ol>
-<li>将场景分为三个类别，不同的类别，认为安全的方式不同<ul>
-<li>对于一些类别，如非法活动，不包含任何有害内容，则认为是安全的</li>
-<li>还有有些类别，如政治话题，不响应则认为是安全的</li>
-<li>最后的一些类别，如法律医疗领域，包含免责声明和风险警告则是安全的</li>
-</ul>
-</li>
-<li>利用ASR，平均攻击成功率来评估模型</li>
-<li>利用RR，拒绝率，来反映模型是否准确的识别到恶意查询，并做出拒绝</li>
-</ol>
-<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
-<p><strong>模型设置</strong>：评估了最近发布的12种模型</p>
-<p><strong>实验方式</strong>：使用排版，扩散，基线等方式</p>
-<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
+<figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">hexo <span class="keyword">new</span> <span class="string">&quot;博客更新流程&quot;</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li><strong>safety prompt</strong>：提出了safety prompt，使模型能够更好的抵御攻击，这一结果是建立在模型能够遵循指令的条件下</li>
-<li><strong>扩散+排版</strong>大多数情况下效果最好，相比于基线还有单纯的用基线和排版</li>
-<li>没有一个模型能够做到<strong>安全性和智能性</strong>的平衡，详细说来，则是有些模型看似安全实则无法正确做出相应</li>
-<li>附录中还对MLLM Protector做了对比，发现 Safety prompt 即激发自主的安全防御更有效</li>
+<li>然后执行下面的代码</li>
 </ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts</strong></p>
+<figure class="highlight verilog"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li>介绍FigStep算法，通过将有害指令转换为图像来对VLM进行攻击，并且证明出在具有OCR功能的GPT-4V上也有较高攻击率。</li>
+<li>然后配置tags以及categories，keywords还有mathjax</li>
 </ul>
-<p><strong>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</strong></p>
+<figure class="highlight subunit"><table><tr><td class="code"><pre><span class="line"><span class="keyword">tags:</span></span><br><span class="line">  - 教程</span><br><span class="line">categories:</span><br><span class="line">  - 教程</span><br><span class="line">keywords: 博客配置教程</span><br><span class="line">mathjax: true</span><br></pre></td></tr></table></figure>
 <ul>
-<li>提出MM-SafetyBench数据集，用来评估多模态大模型，发现其容易受到图文结合的攻击，特别是与文字相关的图片，最后还提出了可以引入安全提示减少攻击成功率。</li>
+<li>然后添加喜欢的图片，以及简单介绍，还有标识符</li>
 </ul>
-<p><strong>Visual Adversarial Examples Jailbreak Aligned Large Language Models</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">                          <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;image.png&quot;</span> <span class="attr">style</span>=<span class="string">&quot;zoom: 15%;&quot;</span> /&gt;</span>		  </span><br><span class="line"></span><br><span class="line">&gt; 博客更新流程</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--more--&gt;</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li>主要是从对抗性样本上面出发，发现其可以绕开VLM的安全防御，使模形能够生成与训练无关的有害内容，还解锁了模型被禁止的能力。</li>
+<li>最后执行</li>
 </ul>
-<p><strong>对比</strong></p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">Visual Adversarial Examples (2023.8)</th>
-<th style="text-align:center">FigStep (2023.12)</th>
-<th style="text-align:center">MM-SafetyBench (2024.6)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><strong>研究对象</strong></td>
-<td style="text-align:center">VLM</td>
-<td style="text-align:center">VLM</td>
-<td style="text-align:center">MLLM(但主要还是针对VLM)</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>方法特点</strong></td>
-<td style="text-align:center">对抗性图片</td>
-<td style="text-align:center">图形化有害文字</td>
-<td style="text-align:center">文本+图片 (扩散+排版)</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>创新点</strong></td>
-<td style="text-align:center">强调对抗性样本的通用性</td>
-<td style="text-align:center">简单的图形化文字的攻击</td>
-<td style="text-align:center">提出安全评估基准</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>研究模型范围</strong></td>
-<td style="text-align:center">GPT-4V和LLaVA</td>
-<td style="text-align:center">6种VLM+GPT-4V</td>
-<td style="text-align:center">12种开源MLLM</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>评估方法</strong></td>
-<td style="text-align:center">人工检查与黑盒传递性验证</td>
-<td style="text-align:center">SafeBench基准测试</td>
-<td style="text-align:center">MM SafetyBench数据集(13个场景，5040个文本图像对)</td>
-</tr>
-</tbody>
-</table>
-</div>
+<figure class="highlight verilog"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span></span><br><span class="line">hexo deploy</span><br><span class="line">(若要本地预览就在hexo deploy先执行 hexo server)</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>论文阅读</category>
+        <category>教程</category>
       </categories>
       <tags>
-        <tag>学习</tag>
-        <tag>论文阅读</tag>
-        <tag>深度学习</tag>
-        <tag>大模型安全</tag>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>消除参考文献中未用的文献</title>
+    <url>/posts/717737966/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>消除参考文献中未用的文献</p>
+</blockquote>
+<span id="more"></span>
+<ul>
+<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
+</li>
+<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
+</li>
+<li><p>然后使用bibtool工具，使用下面代码</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>便可以得到新的精简之后的文件</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>论文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>喜欢的一些话</title>
+    <url>/posts/1527653848/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>喜欢的话</p>
+</blockquote>
+<span id="more"></span>
+<ol>
+<li>以其不争，故天下莫能与之争</li>
+<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
+<li>大音希声  大美无言 大成若缺</li>
+<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
+<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
+<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
+<li>每一个问题，都是对你缺点的量身定做，逃避是没有用的，困难是客观的，问题是有解的</li>
+<li>对自己的可控的事，永远坚持；对于别人主导的事情，随时放弃；对于无能为力的事情，听天由命</li>
+</ol>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
