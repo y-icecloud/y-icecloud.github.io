@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/test.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/test32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/test16.ico">
+  <link rel="mask-icon" href="/images/test.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Parkinsans:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC|Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-loading-bar.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"y-icecloud.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="​        博客更新流程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Neuron-level Interpretation of Deep NLP Models: A Survey">
+<meta property="og:url" content="https://y-icecloud.github.io/posts/1183083500/index.html">
+<meta property="og:site_name" content="y-icecloud">
+<meta property="og:description" content="​        博客更新流程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png">
+<meta property="og:image" content="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png">
+<meta property="og:image" content="https://s2.loli.net/2025/10/22/FjsbqfXiCrcDgHZ.png">
+<meta property="article:published_time" content="2025-10-22T10:59:37.000Z">
+<meta property="article:modified_time" content="2025-10-22T10:59:37.000Z">
+<meta property="article:author" content="y-icecloud">
+<meta property="article:tag" content="大模型理解">
+<meta property="article:tag" content="神经元">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png">
+
+<link rel="canonical" href="https://y-icecloud.github.io/posts/1183083500/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<!-- 文章加密 -->
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+  <title>Neuron-level Interpretation of Deep NLP Models: A Survey | y-icecloud</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">y-icecloud</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">y-icecloud的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://y-icecloud.github.io/posts/1183083500/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/test.jpg">
+      <meta itemprop="name" content="y-icecloud">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="y-icecloud">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Neuron-level Interpretation of Deep NLP Models: A Survey
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-10-22 18:59:37" itemprop="dateCreated datePublished" datetime="2025-10-22T18:59:37+08:00">2025-10-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" itemprop="url" rel="index"><span itemprop="name">论文阅读</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/posts/1183083500/" class="post-meta-item leancloud_visitors" data-flag-title="Neuron-level Interpretation of Deep NLP Models: A Survey" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​      <img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt="image.png" style="zoom: 50%;" /></p>
+<blockquote>
+<p>博客更新流程</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey"><a href="#Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey" class="headerlink" title="Neuron-level Interpretation of Deep NLP Models: A Survey"></a>Neuron-level Interpretation of Deep NLP Models: A Survey</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2108.13138">https://arxiv.org/pdf/2108.13138</a></p>
+</blockquote>
+<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><ul>
+<li>motivation<ul>
+<li>随着深度神经网络在各个领域的激增，对这些模型的可解释性的需求也在增加</li>
+</ul>
+</li>
+<li><p>问题</p>
+<ul>
+<li>在网络的神经元中学习了哪些概念？</li>
+<li>是否有专门学习特定概念的神经元？</li>
+<li>网络神经元内的知识是如何局部/分布和冗余地保存的？</li>
+</ul>
+</li>
+<li><p>好处</p>
+<ul>
+<li><p>通过识别与预测相关的神经元来控制偏差和操纵系统行为</p>
+</li>
+<li><p>通过删除不太有用的神经元来进行模型蒸馏</p>
+</li>
+<li><p>通过选择神经元来进行有效的特征选择</p>
+</li>
+<li>通过用重要神经元引导搜索来进行神经结构搜索。</li>
+</ul>
+</li>
+</ul>
+<h2 id="基础定义"><a href="#基础定义" class="headerlink" title="基础定义"></a>基础定义</h2><ul>
+<li><p><strong>聚焦神经元</strong>：学习单个概念的单个神经元</p>
+</li>
+<li><p><strong>群神经元</strong>：将组合起来表示一个概念的一组神经元</p>
+<p><img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt=""></p>
+</li>
+</ul>
+<h2 id="发现和理解网络中神经元的方法"><a href="#发现和理解网络中神经元的方法" class="headerlink" title="发现和理解网络中神经元的方法"></a>发现和理解网络中神经元的方法</h2><ul>
+<li><p>方法</p>
+<ul>
+<li>可视化 - Visualization</li>
+<li>基于语料库</li>
+<li>基于探究</li>
+<li>基于因果关系</li>
+<li>杂项</li>
+</ul>
+</li>
+<li><p>Visualization 可视化</p>
+<ul>
+<li>定性以及主观。</li>
+<li>由于大量的人为参与，它无法扩展到整个网络。</li>
+<li>很难解释在不同环境中获得多个角色的多义神经元。</li>
+<li>它在识别组神经元方面无效。</li>
+<li>并非所有神经元都是视觉上可解释的。</li>
+</ul>
+</li>
+<li><p>Corpus-based Methods 基于语料库</p>
+<ul>
+<li>汇总数据激活的统计数据来发现神经元的作用</li>
+<li>基于语料库的方法是全局解释方法，因为它们解释了神经元在一组输入中的作用</li>
+<li>将神经元作为输入并识别神经元已经学习的概念的方法（概念搜索）<ul>
+<li>简单来说，早期是 “看神经元对哪些 5 个词的组合最敏感，然后人来猜它代表什么”；后面则是 “看神经元对哪些完整句子最敏感，然后通过分析句子结构自动提炼出它代表的词或短语概念”，后者更高效，减少了人工依赖。</li>
+</ul>
+</li>
+<li>将概念作为输入并标识学习概念的神经元的其他方法（神经元搜索）<ul>
+<li>对语料中每个句子，根据神经元激活值阈值生成<strong>二值掩码（binary mask）</strong>。同样为每个概念生成二值掩码（标记其在句子中是否出现）。计算神经元掩码与概念掩码的<strong>交并比（IoU）</strong>，用于生成组合解释。</li>
+<li>将神经元的<strong>原始激活值直接作为预测分数</strong>。计算每个神经元和每个概念的<strong>平均精度（Average Precision）</strong>。</li>
+<li>聚焦于<strong>具有目标概念的实例</strong>（不是对语料库中的所有句子进行分析，而是先做一次 “筛选”—— 把要研究的 “概念”的句子挑出来。）计算神经元在这些实例上的<strong>平均激活值（Mean Activation Value）</strong>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Probing-based Methods 基于探究</p>
+<ul>
+<li><strong>Linear Classifiers</strong>：利用待分析模型生成的激活向量（可理解为模型中神经元的激活值组成的向量）来训练一个线性分类器，让它学习我们感兴趣的概念。分类器赋予神经元（作为分类器的特征）的权重，就代表了这些神经元对该概念的重要性分数。</li>
+<li><strong>Gaussian Classifier</strong> ：其核心假设是：神经元的激活值服从高斯分布（正态分布）。他们的具体做法是，在所有神经元的激活值上拟合一个 “多元高斯分布”（即同时考虑多个神经元之间的关联，建模它们的联合分布），并为单个神经元提取了专门的 “探测指标”（用于衡量该神经元与目标概念的关联）。缺点：<strong>需要有监督数据来训练分类器</strong>。</li>
+</ul>
+</li>
+<li><p>Causation-based methods 基于因果关系的方法 </p>
+<ul>
+<li><p>Ablation ：消融的核心逻辑是<strong>通过改变单个神经元的值，来观察它对模型整体性能的影响</strong>，以此判断该神经元的重要性。具体操作是将目标神经元的值 “钳位”（固定）为 0 或某个特定值，然后对比模型在操作前后的性能变化。</p>
+<p>它主要有两种应用方向：</p>
+<ul>
+<li><strong>无监督场景：识别模型层面的关键神经元</strong>目标是找到对整个模型性能至关重要的神经元。判断标准是：当某个神经元被消融（值被固定）后，模型的整体性能（如准确率）出现大幅下降，这类神经元就是 “关键神经元”。</li>
+<li><strong>有监督场景：识别特定输出类别的关键神经元</strong>目标是找到与模型某个具体输出类别（比如识别图片中的 “猫”）相关的神经元。判断标准是：当消融某个神经元后，模型对该类别的预测结果发生 “翻转”（比如原本预测为 “猫”，现在预测为 “狗”），这类神经元就是该类别对应的 “关键神经元”。此时，这个输出类别就是判断神经元重要性的 “参照概念”。</li>
+</ul>
+<p>消融技术的主要局限在于<strong>难以识别 “神经元组” 的作用</strong>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Knowledge Attribution Method</strong>：</p>
+<ul>
+<li>模型（特指 Transformer 模型）所学习的事实性知识，是存储在其前馈神经网络（feed-forward neural networks）的神经元中的</li>
+<li>使用了 “集成梯度（Integrated Gradient）” 这一归因技术，来计算并筛选出对表达某个 “关系事实” 最重要的那部分神经元（即 “top neurons”）。</li>
+<li>只能识别出对预测重要的神经元，但无法直接知道这些神经元具体学习并代表了什么 “概念”。</li>
+</ul>
+</li>
+<li><p><strong>Matrix Factorization</strong></p>
+<ul>
+<li>矩阵分解（MF）的核心是将一个大型矩阵分解为多个小型 “因子矩阵” 的乘积，其中每个 “因子” 代表一组功能相似的元素。</li>
+<li>当输入一个句子时，模型各层的神经元激活值会构成一个<strong>激活矩阵</strong>。</li>
+<li>MF 可用于分解这个激活矩阵，分解后得到的每个 “因子” 对应一组神经元，这组神经元共同学习并编码了某个特定的 “概念”（比如语法结构、语义角色等）。</li>
+<li>而且目前几乎没有学术研究将 MF 方法用于分析 NLP 模型</li>
+<li><strong>优势</strong>：与此前讨论的其他无监督解释方法相比，MF 的固有优势是能直接 “发现神经元组”（即通过分解自动将功能相似的神经元聚类），无需提前定义聚类规则。</li>
+<li><strong>核心局限 </strong>：<ol>
+<li>如何确定 “因子数量”（即需要将激活矩阵分解为多少个因子 / 神经元组）是一个非 trivial的问题，目前缺乏统一且有效的确定方法。</li>
+<li>“局部解释” 意味着 MF 只能解释<strong>单个输入（如一个句子）对应的模型激活模式</strong>，而无法提供 “全局解释”（即跨多个输入的、模型普遍遵循的规律）</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Clustering Methods</p>
+<ul>
+<li>聚类是另一种以无监督方式分析神经元组的有效方法。直觉是，如果一组神经元学习了一个特定的概念，那么它们的激活就会形成一个集群</li>
+<li>局限性与矩阵分解方法类似，聚类数量是一个超参数，需要根据经验预先定义或选择。少量聚类可能导致同一组中出现不同的神经元，而大量聚类可能导致相似的神经元分裂成不同组</li>
+</ul>
+</li>
+<li><p>Multi-model Search</p>
+<ul>
+<li>为同一任务训练的不同模型，会共享该任务的关键信息。如果一个概念对任务很重要，那么所有为该任务优化的模型都应该学习到它。因此，该搜索的目标是<strong>识别在不同模型间行为相似的神经元</strong>—— 这些神经元很可能编码了任务的核心概念。</li>
+<li><p><strong>聚合相关系数</strong>：为了从不同角度凸显模型特征，他们用四种方法对每个神经元的相关系数进行聚合，每种方法目标不同：</p>
+<ul>
+<li><strong>最大相关（Max Correlation）</strong>：捕捉在多个模型中都 “强烈出现” 的概念（即该神经元与其他模型中某些神经元的相关性极高）。</li>
+<li><strong>最小相关（Min Correlation）</strong>：筛选那些与很多模型都有相关性、但并非顶级相关的神经元（强调普遍性而非极致相关性）。</li>
+<li><strong>回归排序（Regression Ranking）</strong>：寻找自身信息分散在其他模型多个神经元中的 “个体神经元”（即该神经元的功能由其他模型的多个神经元共同实现）。</li>
+<li><strong>SVCCA</strong>：捕捉那些可能分散在 “比完整表示维度更低” 的信息（聚焦低维空间中的关键信息分布）。</li>
+</ul>
+</li>
+<li><p>局限性：即需要人类来解释这些被识别出的神经元的底层含义（比如这个神经元具体编码了什么概念）</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h2><ul>
+<li><p>Ablation</p>
+<ul>
+<li>在模型中的某个神经元前后判断其对输出效果的影响</li>
+</ul>
+</li>
+<li><p>Classification Performance</p>
+<ul>
+<li>给定与某个概念相关的显著神经元后，评估其正确性的简单方法如下：<ol>
+<li><strong>训练分类器</strong>：将这些显著神经元作为特征，训练一个分类器来预测目标概念。</li>
+<li><strong>性能对比</strong>：将该分类器的性能，与另外两个分类器进行比较 —— 一个用<strong>随机神经元</strong>训练，另一个用<strong>最不重要的神经元</strong>训练。</li>
+<li><strong>衡量有效性</strong>：通过这种相对性能对比，来衡量所选显著神经元的有效性（即它们是否真的与目标概念相关）。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>Information Theoretic Metric<ul>
+<li>用<strong>信息论指标（如互信息）</strong> 来解读深度学习 NLP 模型表示的思路。</li>
+</ul>
+</li>
+<li>Concept Selectivity<ul>
+<li>概念选择性用于衡量<strong>单个神经元</strong>与 “发现的概念（discovered concept）” 之间的 “对齐程度（alignment）”，本质是评估神经元对目标概念的 “专属响应程度”。</li>
+<li>判断一个神经元是否 “专门” 对某个语言概念敏感，而不受其他概念干扰。</li>
+<li>计算方式<ul>
+<li>计算一个神经元在两类句子上的平均激活值：一类是 “包含目标概念的句子”，另一类是 “不包含目标概念的句子”。</li>
+<li>用这两个平均激活值的<strong>差值</strong>作为 “选择性” 的量化结果。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Qualitative Evaluation<ul>
+<li>将 “可视化” 作为一种非量化（定性）的评估工具，用于分析那些被选中的神经元。它不依赖具体数值，而是通过直观呈现来判断神经元的特性。</li>
+<li>可视化单独使用时效果有限，<strong>与其他方法结合才能最大化其价值</strong>，具体体现在 “缩小搜索范围” 上：<ul>
+<li>结合<strong>概念搜索（Concept Search）</strong>：可将分析范围缩小到 “对特定概念激活程度高的神经元”，避免无差别分析所有神经元。</li>
+<li>结合<strong>基于探针的方法（Probing-based methods）</strong>：能进一步聚焦到 “对这些高激活概念而言，功能最显著的神经元”，让评估更具针对性。</li>
+</ul>
+</li>
+<li>简单来说，可视化负责 “直观展示神经元在关注什么”，而其他方法负责 “告诉我们该看哪些神经元”，二者结合让对神经元的定性评估更高效、准确。</li>
+</ul>
+</li>
+</ul>
+<h2 id="主要发现"><a href="#主要发现" class="headerlink" title="主要发现"></a>主要发现</h2><ul>
+<li><p>Concept Discovery</p>
+<ul>
+<li>神经元可以学习单词在输入句子中的位置</li>
+<li>捕捉“否定”的神经元</li>
+<li>捕获相关概念组的神经元，如西兰花、面条、胡萝卜</li>
+<li>神经元捕获了核心语言概念，如名词、动词形式、数字、冠词等</li>
+<li>负责概念的神经元数量因概念的性质而异<ul>
+<li>封闭类 (随着语言的发展，不会添加新词) 的神经元数量较少</li>
+<li>开放类 (随着语言的发展，不断添加新单词,例如“chillax”，一个混合了“chill”和“relax”的动词。)的神经元数量较多</li>
+</ul>
+</li>
+<li>神经元表现出单义和多义行为其中少数神经元是单一概念所独有的，而其他神经元本质上是多义的，并捕获了多个概念</li>
+<li>捕获了远程依赖性包括引号和括号</li>
+</ul>
+</li>
+<li><p>Architectural Analysis</p>
+<ul>
+<li><p>人类语言的结构是分层的，形态和音韵位于底部，其次是词位，然后是句法结构。发现捕捉单词形态的神经元主要存在于较低层和中间层，而学习句法的神经元则存在于较高层。</p>
+</li>
+<li><p>学习同形异义词的神经元分布在整个网络中</p>
+</li>
+<li><p>信息并不是在任何单个层中离散保存的，而是分布的，并且冗余存在于网络中</p>
+</li>
+<li><p>BERT（自动编码器）中的语言知识在整个网络中高度分布，而 XLNet（自回归）则由来自几层的神经元主要负责一个概念</p>
+<p><img src="https://s2.loli.net/2025/10/22/FjsbqfXiCrcDgHZ.png" alt=""></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="神经元探测的应用"><a href="#神经元探测的应用" class="headerlink" title="神经元探测的应用"></a>神经元探测的应用</h2><ul>
+<li>控制模型的行为<ul>
+<li>在 NMT 模型中确定了开关神经元，这些神经元对现在时动词积极激活，对过去时动词负激活。通过纵这些神经元的值，他们能够在推理过程中成功地将输出翻译从现在时更改为过去时</li>
+<li>即时操纵输出，例如，它可用于针对种族和性别等敏感属性消除模型输出的偏差</li>
+</ul>
+</li>
+<li>模型蒸馏和效率<ul>
+<li>通过利用Transformer模型中的层和神经元特定冗余，对于模型的提炼和提升效率很有用。</li>
+</ul>
+</li>
+<li>域适应，提高泛化性<ul>
+<li>以针对在微调目标域模型时灾难性遗忘一般域的问题。</li>
+<li>三步适应过程：<ul>
+<li>根据神经元的重要性对神经元进行排名</li>
+<li>从网络中修剪不重要的神经元并使用师生框架进行重新训练</li>
+<li>将网络扩展到其原始大小并向域内微调，冻结显着神经元并仅调整不重要的神经元。</li>
+</ul>
+</li>
+<li>使用这种方法有助于避免对一般域的灾难性遗忘，同时还可以在域内数据上获得最佳性能。</li>
+</ul>
+</li>
+<li>生成组合解释</li>
+</ul>
+<h2 id="未来问题和未来研究方向"><a href="#未来问题和未来研究方向" class="headerlink" title="未来问题和未来研究方向"></a>未来问题和未来研究方向</h2><ul>
+<li>目前大多数分析方法在寻找与某概念相关的神经元时，<strong>忽略了神经元之间的相互作用</strong>，仅关注单个神经元的贡献。</li>
+<li>大量的解释研究依赖于人类定义的语言概念来探测模型。这些模型可能没有严格遵守人类定义的概念并学习有关该语言的新概念。</li>
+<li>当前研究多聚焦于 “知识如何编码在模型表征中”，但对 “模型预测时是否真的使用这些编码的知识” 探索较少。</li>
+<li>神经元解释的工作缺乏标准的评估基准，因此在相同模型上进行的研究无法比较。</li>
+<li>神经元分析方法的理论基础以及它们旨在捕捉的关于给定概念的观点各不相同。这导致神经元的选择可能不会在所有方</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>y-icecloud
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://y-icecloud.github.io/posts/1183083500/" title="Neuron-level Interpretation of Deep NLP Models: A Survey">https://y-icecloud.github.io/posts/1183083500/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%90%86%E8%A7%A3/" rel="tag"><i class="fa fa-tag"></i> 大模型理解</a>
+              <a href="/tags/%E7%A5%9E%E7%BB%8F%E5%85%83/" rel="tag"><i class="fa fa-tag"></i> 神经元</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/717737966/" rel="prev" title="消除参考文献中未用的文献">
+      <i class="fa fa-chevron-left"></i> 消除参考文献中未用的文献
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey"><span class="nav-number">1.</span> <span class="nav-text">Neuron-level Interpretation of Deep NLP Models: A Survey</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">总述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E5%AE%9A%E4%B9%89"><span class="nav-number">1.2.</span> <span class="nav-text">基础定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E7%8E%B0%E5%92%8C%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%A5%9E%E7%BB%8F%E5%85%83%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">发现和理解网络中神经元的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">评估方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8F%91%E7%8E%B0"><span class="nav-number">1.5.</span> <span class="nav-text">主要发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E5%85%83%E6%8E%A2%E6%B5%8B%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">神经元探测的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E6%9D%A5%E9%97%AE%E9%A2%98%E5%92%8C%E6%9C%AA%E6%9D%A5%E7%A0%94%E7%A9%B6%E6%96%B9%E5%90%91"><span class="nav-number">1.7.</span> <span class="nav-text">未来问题和未来研究方向</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="y-icecloud"
+      src="/images/test.jpg">
+  <p class="site-author-name" itemprop="name">y-icecloud</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/y-icecloud" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;y-icecloud" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2942057934@qq.com" title="E-Mail → mailto:2942057934@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">y-icecloud</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">11k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21 分钟</span>
+</div><div>
+<!--添加网站运行时间-->
+<span>网站已经运行</span>
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    function createtime() {
+        const startTime = '09/27/2018 00:12:55',
+            start = new Date(startTime)
+        let mill = new Date() - start,
+            seconds = Math.floor(mill / 1000),
+            mins = Math.floor(seconds / 60),
+            hours = Math.floor(mins / 60),
+            days = Math.floor(hours / 24)
+        const time = {
+            seconds: seconds - mins * 60,
+            mins: mins - hours * 60,
+            hours: hours - days * 24,
+        }
+        for (const k in time) {
+            time[k] = `${time[k]}`.padStart(2, '0')
+        }
+        document.getElementById("timeDate").innerHTML = ` ${days} 天`
+        document.getElementById("times").innerHTML = ` ${time.hours} 小时 ${time.mins} 分 ${time.seconds} 秒`
+    }
+    setInterval(createtime, 500)
+</script>
+</div>
+
+<div>
+    <!--添加总阅读次数-->
+    <div>
+        <span>本站总访问量</span>
+        <span id="site_total_read_count">Loading...</span>
+    </div>
+    <script>
+        async function sleep(ms = 1000) {
+            return await new Promise(resolve => {
+                const timer = setTimeout(() => {
+                    clearTimeout(timer)
+                    return resolve()
+                }, ms)
+            })
+        }
+        async function site_read_count() {
+            const className = 'Counter',
+                query = new AV.Query(className)
+            return query.find()
+                .then(_ => _.map(i => i.attributes.time))
+                .then(_ => _.reduce((a, b) => a + b))
+        }
+        new Promise(resolve => {
+            const timer = setInterval(() => {
+                if (typeof AV !== "undefined") {
+                    clearInterval(timer)
+                    return resolve()
+                }
+            }, 250)
+        })
+            .then(() => site_read_count())
+            .then(_ => {
+                const s = ` ${_} 次`
+                document.getElementById("site_total_read_count").innerHTML = s
+            })
+            .catch(e => console.error(e.message))
+    </script>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
+
+.l_header
+  $iconW = 32px
+  $iconMargin = 4px
+  position: fixed
++ z-index: 100
+  top: 0
+  width: 100%
