@@ -1,6 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Neuron-level Interpretation of Deep NLP Models: A Survey</title>
+    <url>/posts/1183083500/</url>
+    <content><![CDATA[<p>​      <img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt="image.png" style="zoom: 50%;" /></p>
+<blockquote>
+<p>Neuron-level Interpretation of Deep NLP Models: A Survey</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey"><a href="#Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey" class="headerlink" title="Neuron-level Interpretation of Deep NLP Models: A Survey"></a>Neuron-level Interpretation of Deep NLP Models: A Survey</h1><blockquote>
+<p><a href="https://arxiv.org/pdf/2108.13138">https://arxiv.org/pdf/2108.13138</a></p>
+</blockquote>
+<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><ul>
+<li>motivation<ul>
+<li>随着深度神经网络在各个领域的激增，对这些模型的可解释性的需求也在增加</li>
+</ul>
+</li>
+<li><p>问题</p>
+<ul>
+<li>在网络的神经元中学习了哪些概念？</li>
+<li>是否有专门学习特定概念的神经元？</li>
+<li>网络神经元内的知识是如何局部/分布和冗余地保存的？</li>
+</ul>
+</li>
+<li><p>好处</p>
+<ul>
+<li><p>通过识别与预测相关的神经元来控制偏差和操纵系统行为</p>
+</li>
+<li><p>通过删除不太有用的神经元来进行模型蒸馏</p>
+</li>
+<li><p>通过选择神经元来进行有效的特征选择</p>
+</li>
+<li>通过用重要神经元引导搜索来进行神经结构搜索。</li>
+</ul>
+</li>
+</ul>
+<h2 id="基础定义"><a href="#基础定义" class="headerlink" title="基础定义"></a>基础定义</h2><ul>
+<li><p><strong>聚焦神经元</strong>：学习单个概念的单个神经元</p>
+</li>
+<li><p><strong>群神经元</strong>：将组合起来表示一个概念的一组神经元</p>
+<p><img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt=""></p>
+</li>
+</ul>
+<h2 id="发现和理解网络中神经元的方法"><a href="#发现和理解网络中神经元的方法" class="headerlink" title="发现和理解网络中神经元的方法"></a>发现和理解网络中神经元的方法</h2><ul>
+<li><p>方法</p>
+<ul>
+<li>可视化 - Visualization</li>
+<li>基于语料库</li>
+<li>基于探究</li>
+<li>基于因果关系</li>
+<li>杂项</li>
+</ul>
+</li>
+<li><p>Visualization 可视化</p>
+<ul>
+<li>定性以及主观。</li>
+<li>由于大量的人为参与，它无法扩展到整个网络。</li>
+<li>很难解释在不同环境中获得多个角色的多义神经元。</li>
+<li>它在识别组神经元方面无效。</li>
+<li>并非所有神经元都是视觉上可解释的。</li>
+</ul>
+</li>
+<li><p>Corpus-based Methods 基于语料库</p>
+<ul>
+<li>汇总数据激活的统计数据来发现神经元的作用</li>
+<li>基于语料库的方法是全局解释方法，因为它们解释了神经元在一组输入中的作用</li>
+<li>将神经元作为输入并识别神经元已经学习的概念的方法（概念搜索）<ul>
+<li>简单来说，早期是 “看神经元对哪些 5 个词的组合最敏感，然后人来猜它代表什么”；后面则是 “看神经元对哪些完整句子最敏感，然后通过分析句子结构自动提炼出它代表的词或短语概念”，后者更高效，减少了人工依赖。</li>
+</ul>
+</li>
+<li>将概念作为输入并标识学习概念的神经元的其他方法（神经元搜索）<ul>
+<li>对语料中每个句子，根据神经元激活值阈值生成<strong>二值掩码（binary mask）</strong>。同样为每个概念生成二值掩码（标记其在句子中是否出现）。计算神经元掩码与概念掩码的<strong>交并比（IoU）</strong>，用于生成组合解释。</li>
+<li>将神经元的<strong>原始激活值直接作为预测分数</strong>。计算每个神经元和每个概念的<strong>平均精度（Average Precision）</strong>。</li>
+<li>聚焦于<strong>具有目标概念的实例</strong>（不是对语料库中的所有句子进行分析，而是先做一次 “筛选”—— 把要研究的 “概念”的句子挑出来。）计算神经元在这些实例上的<strong>平均激活值（Mean Activation Value）</strong>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Probing-based Methods 基于探究</p>
+<ul>
+<li><strong>Linear Classifiers</strong>：利用待分析模型生成的激活向量（可理解为模型中神经元的激活值组成的向量）来训练一个线性分类器，让它学习我们感兴趣的概念。分类器赋予神经元（作为分类器的特征）的权重，就代表了这些神经元对该概念的重要性分数。</li>
+<li><strong>Gaussian Classifier</strong> ：其核心假设是：神经元的激活值服从高斯分布（正态分布）。他们的具体做法是，在所有神经元的激活值上拟合一个 “多元高斯分布”（即同时考虑多个神经元之间的关联，建模它们的联合分布），并为单个神经元提取了专门的 “探测指标”（用于衡量该神经元与目标概念的关联）。缺点：<strong>需要有监督数据来训练分类器</strong>。</li>
+</ul>
+</li>
+<li><p>Causation-based methods 基于因果关系的方法 </p>
+<ul>
+<li><p>Ablation ：消融的核心逻辑是<strong>通过改变单个神经元的值，来观察它对模型整体性能的影响</strong>，以此判断该神经元的重要性。具体操作是将目标神经元的值 “钳位”（固定）为 0 或某个特定值，然后对比模型在操作前后的性能变化。</p>
+<p>它主要有两种应用方向：</p>
+<ul>
+<li><strong>无监督场景：识别模型层面的关键神经元</strong>目标是找到对整个模型性能至关重要的神经元。判断标准是：当某个神经元被消融（值被固定）后，模型的整体性能（如准确率）出现大幅下降，这类神经元就是 “关键神经元”。</li>
+<li><strong>有监督场景：识别特定输出类别的关键神经元</strong>目标是找到与模型某个具体输出类别（比如识别图片中的 “猫”）相关的神经元。判断标准是：当消融某个神经元后，模型对该类别的预测结果发生 “翻转”（比如原本预测为 “猫”，现在预测为 “狗”），这类神经元就是该类别对应的 “关键神经元”。此时，这个输出类别就是判断神经元重要性的 “参照概念”。</li>
+</ul>
+<p>消融技术的主要局限在于<strong>难以识别 “神经元组” 的作用</strong>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Knowledge Attribution Method</strong>：</p>
+<ul>
+<li>模型（特指 Transformer 模型）所学习的事实性知识，是存储在其前馈神经网络（feed-forward neural networks）的神经元中的</li>
+<li>使用了 “集成梯度（Integrated Gradient）” 这一归因技术，来计算并筛选出对表达某个 “关系事实” 最重要的那部分神经元（即 “top neurons”）。</li>
+<li>只能识别出对预测重要的神经元，但无法直接知道这些神经元具体学习并代表了什么 “概念”。</li>
+</ul>
+</li>
+<li><p><strong>Matrix Factorization</strong></p>
+<ul>
+<li>矩阵分解（MF）的核心是将一个大型矩阵分解为多个小型 “因子矩阵” 的乘积，其中每个 “因子” 代表一组功能相似的元素。</li>
+<li>当输入一个句子时，模型各层的神经元激活值会构成一个<strong>激活矩阵</strong>。</li>
+<li>MF 可用于分解这个激活矩阵，分解后得到的每个 “因子” 对应一组神经元，这组神经元共同学习并编码了某个特定的 “概念”（比如语法结构、语义角色等）。</li>
+<li>而且目前几乎没有学术研究将 MF 方法用于分析 NLP 模型</li>
+<li><strong>优势</strong>：与此前讨论的其他无监督解释方法相比，MF 的固有优势是能直接 “发现神经元组”（即通过分解自动将功能相似的神经元聚类），无需提前定义聚类规则。</li>
+<li><strong>核心局限 </strong>：<ol>
+<li>如何确定 “因子数量”（即需要将激活矩阵分解为多少个因子 / 神经元组）是一个非 trivial的问题，目前缺乏统一且有效的确定方法。</li>
+<li>“局部解释” 意味着 MF 只能解释<strong>单个输入（如一个句子）对应的模型激活模式</strong>，而无法提供 “全局解释”（即跨多个输入的、模型普遍遵循的规律）</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Clustering Methods</p>
+<ul>
+<li>聚类是另一种以无监督方式分析神经元组的有效方法。直觉是，如果一组神经元学习了一个特定的概念，那么它们的激活就会形成一个集群</li>
+<li>局限性与矩阵分解方法类似，聚类数量是一个超参数，需要根据经验预先定义或选择。少量聚类可能导致同一组中出现不同的神经元，而大量聚类可能导致相似的神经元分裂成不同组</li>
+</ul>
+</li>
+<li><p>Multi-model Search</p>
+<ul>
+<li>为同一任务训练的不同模型，会共享该任务的关键信息。如果一个概念对任务很重要，那么所有为该任务优化的模型都应该学习到它。因此，该搜索的目标是<strong>识别在不同模型间行为相似的神经元</strong>—— 这些神经元很可能编码了任务的核心概念。</li>
+<li><p><strong>聚合相关系数</strong>：为了从不同角度凸显模型特征，他们用四种方法对每个神经元的相关系数进行聚合，每种方法目标不同：</p>
+<ul>
+<li><strong>最大相关（Max Correlation）</strong>：捕捉在多个模型中都 “强烈出现” 的概念（即该神经元与其他模型中某些神经元的相关性极高）。</li>
+<li><strong>最小相关（Min Correlation）</strong>：筛选那些与很多模型都有相关性、但并非顶级相关的神经元（强调普遍性而非极致相关性）。</li>
+<li><strong>回归排序（Regression Ranking）</strong>：寻找自身信息分散在其他模型多个神经元中的 “个体神经元”（即该神经元的功能由其他模型的多个神经元共同实现）。</li>
+<li><strong>SVCCA</strong>：捕捉那些可能分散在 “比完整表示维度更低” 的信息（聚焦低维空间中的关键信息分布）。</li>
+</ul>
+</li>
+<li><p>局限性：即需要人类来解释这些被识别出的神经元的底层含义（比如这个神经元具体编码了什么概念）</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h2><ul>
+<li><p>Ablation</p>
+<ul>
+<li>在模型中的某个神经元前后判断其对输出效果的影响</li>
+</ul>
+</li>
+<li><p>Classification Performance</p>
+<ul>
+<li>给定与某个概念相关的显著神经元后，评估其正确性的简单方法如下：<ol>
+<li><strong>训练分类器</strong>：将这些显著神经元作为特征，训练一个分类器来预测目标概念。</li>
+<li><strong>性能对比</strong>：将该分类器的性能，与另外两个分类器进行比较 —— 一个用<strong>随机神经元</strong>训练，另一个用<strong>最不重要的神经元</strong>训练。</li>
+<li><strong>衡量有效性</strong>：通过这种相对性能对比，来衡量所选显著神经元的有效性（即它们是否真的与目标概念相关）。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>Information Theoretic Metric<ul>
+<li>用<strong>信息论指标（如互信息）</strong> 来解读深度学习 NLP 模型表示的思路。</li>
+</ul>
+</li>
+<li>Concept Selectivity<ul>
+<li>概念选择性用于衡量<strong>单个神经元</strong>与 “发现的概念（discovered concept）” 之间的 “对齐程度（alignment）”，本质是评估神经元对目标概念的 “专属响应程度”。</li>
+<li>判断一个神经元是否 “专门” 对某个语言概念敏感，而不受其他概念干扰。</li>
+<li>计算方式<ul>
+<li>计算一个神经元在两类句子上的平均激活值：一类是 “包含目标概念的句子”，另一类是 “不包含目标概念的句子”。</li>
+<li>用这两个平均激活值的<strong>差值</strong>作为 “选择性” 的量化结果。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Qualitative Evaluation<ul>
+<li>将 “可视化” 作为一种非量化（定性）的评估工具，用于分析那些被选中的神经元。它不依赖具体数值，而是通过直观呈现来判断神经元的特性。</li>
+<li>可视化单独使用时效果有限，<strong>与其他方法结合才能最大化其价值</strong>，具体体现在 “缩小搜索范围” 上：<ul>
+<li>结合<strong>概念搜索（Concept Search）</strong>：可将分析范围缩小到 “对特定概念激活程度高的神经元”，避免无差别分析所有神经元。</li>
+<li>结合<strong>基于探针的方法（Probing-based methods）</strong>：能进一步聚焦到 “对这些高激活概念而言，功能最显著的神经元”，让评估更具针对性。</li>
+</ul>
+</li>
+<li>简单来说，可视化负责 “直观展示神经元在关注什么”，而其他方法负责 “告诉我们该看哪些神经元”，二者结合让对神经元的定性评估更高效、准确。</li>
+</ul>
+</li>
+</ul>
+<h2 id="主要发现"><a href="#主要发现" class="headerlink" title="主要发现"></a>主要发现</h2><ul>
+<li><p>Concept Discovery</p>
+<ul>
+<li>神经元可以学习单词在输入句子中的位置</li>
+<li>捕捉“否定”的神经元</li>
+<li>捕获相关概念组的神经元，如西兰花、面条、胡萝卜</li>
+<li>神经元捕获了核心语言概念，如名词、动词形式、数字、冠词等</li>
+<li>负责概念的神经元数量因概念的性质而异<ul>
+<li>封闭类 (随着语言的发展，不会添加新词) 的神经元数量较少</li>
+<li>开放类 (随着语言的发展，不断添加新单词,例如“chillax”，一个混合了“chill”和“relax”的动词。)的神经元数量较多</li>
+</ul>
+</li>
+<li>神经元表现出单义和多义行为其中少数神经元是单一概念所独有的，而其他神经元本质上是多义的，并捕获了多个概念</li>
+<li>捕获了远程依赖性包括引号和括号</li>
+</ul>
+</li>
+<li><p>Architectural Analysis</p>
+<ul>
+<li><p>人类语言的结构是分层的，形态和音韵位于底部，其次是词位，然后是句法结构。发现捕捉单词形态的神经元主要存在于较低层和中间层，而学习句法的神经元则存在于较高层。</p>
+</li>
+<li><p>学习同形异义词的神经元分布在整个网络中</p>
+</li>
+<li><p>信息并不是在任何单个层中离散保存的，而是分布的，并且冗余存在于网络中</p>
+</li>
+<li><p>BERT（自动编码器）中的语言知识在整个网络中高度分布，而 XLNet（自回归）则由来自几层的神经元主要负责一个概念</p>
+<p><img src="https://s2.loli.net/2025/10/22/FjsbqfXiCrcDgHZ.png" alt=""></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="神经元探测的应用"><a href="#神经元探测的应用" class="headerlink" title="神经元探测的应用"></a>神经元探测的应用</h2><ul>
+<li>控制模型的行为<ul>
+<li>在 NMT 模型中确定了开关神经元，这些神经元对现在时动词积极激活，对过去时动词负激活。通过纵这些神经元的值，他们能够在推理过程中成功地将输出翻译从现在时更改为过去时</li>
+<li>即时操纵输出，例如，它可用于针对种族和性别等敏感属性消除模型输出的偏差</li>
+</ul>
+</li>
+<li>模型蒸馏和效率<ul>
+<li>通过利用Transformer模型中的层和神经元特定冗余，对于模型的提炼和提升效率很有用。</li>
+</ul>
+</li>
+<li>域适应，提高泛化性<ul>
+<li>以针对在微调目标域模型时灾难性遗忘一般域的问题。</li>
+<li>三步适应过程：<ul>
+<li>根据神经元的重要性对神经元进行排名</li>
+<li>从网络中修剪不重要的神经元并使用师生框架进行重新训练</li>
+<li>将网络扩展到其原始大小并向域内微调，冻结显着神经元并仅调整不重要的神经元。</li>
+</ul>
+</li>
+<li>使用这种方法有助于避免对一般域的灾难性遗忘，同时还可以在域内数据上获得最佳性能。</li>
+</ul>
+</li>
+<li>生成组合解释</li>
+</ul>
+<h2 id="未来问题和未来研究方向"><a href="#未来问题和未来研究方向" class="headerlink" title="未来问题和未来研究方向"></a>未来问题和未来研究方向</h2><ul>
+<li>目前大多数分析方法在寻找与某概念相关的神经元时，<strong>忽略了神经元之间的相互作用</strong>，仅关注单个神经元的贡献。</li>
+<li>大量的解释研究依赖于人类定义的语言概念来探测模型。这些模型可能没有严格遵守人类定义的概念并学习有关该语言的新概念。</li>
+<li>当前研究多聚焦于 “知识如何编码在模型表征中”，但对 “模型预测时是否真的使用这些编码的知识” 探索较少。</li>
+<li>神经元解释的工作缺乏标准的评估基准，因此在相同模型上进行的研究无法比较。</li>
+<li>神经元分析方法的理论基础以及它们旨在捕捉的关于给定概念的观点各不相同。这导致神经元的选择可能不会在所有方</li>
+</ul>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>大模型理解</tag>
+        <tag>神经元</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>FigStep的论文阅读</title>
     <url>/posts/3790135051/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/12/01/hq9WksMYbzmgZe1.png" alt="image.png"></p>
@@ -271,254 +519,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Neuron-level Interpretation of Deep NLP Models: A Survey</title>
-    <url>/posts/1183083500/</url>
-    <content><![CDATA[<p>​      <img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt="image.png" style="zoom: 50%;" /></p>
-<blockquote>
-<p>博客更新流程</p>
-</blockquote>
-<span id="more"></span>
-<h1 id="Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey"><a href="#Neuron-level-Interpretation-of-Deep-NLP-Models-A-Survey" class="headerlink" title="Neuron-level Interpretation of Deep NLP Models: A Survey"></a>Neuron-level Interpretation of Deep NLP Models: A Survey</h1><blockquote>
-<p><a href="https://arxiv.org/pdf/2108.13138">https://arxiv.org/pdf/2108.13138</a></p>
-</blockquote>
-<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><ul>
-<li>motivation<ul>
-<li>随着深度神经网络在各个领域的激增，对这些模型的可解释性的需求也在增加</li>
-</ul>
-</li>
-<li><p>问题</p>
-<ul>
-<li>在网络的神经元中学习了哪些概念？</li>
-<li>是否有专门学习特定概念的神经元？</li>
-<li>网络神经元内的知识是如何局部/分布和冗余地保存的？</li>
-</ul>
-</li>
-<li><p>好处</p>
-<ul>
-<li><p>通过识别与预测相关的神经元来控制偏差和操纵系统行为</p>
-</li>
-<li><p>通过删除不太有用的神经元来进行模型蒸馏</p>
-</li>
-<li><p>通过选择神经元来进行有效的特征选择</p>
-</li>
-<li>通过用重要神经元引导搜索来进行神经结构搜索。</li>
-</ul>
-</li>
-</ul>
-<h2 id="基础定义"><a href="#基础定义" class="headerlink" title="基础定义"></a>基础定义</h2><ul>
-<li><p><strong>聚焦神经元</strong>：学习单个概念的单个神经元</p>
-</li>
-<li><p><strong>群神经元</strong>：将组合起来表示一个概念的一组神经元</p>
-<p><img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt=""></p>
-</li>
-</ul>
-<h2 id="发现和理解网络中神经元的方法"><a href="#发现和理解网络中神经元的方法" class="headerlink" title="发现和理解网络中神经元的方法"></a>发现和理解网络中神经元的方法</h2><ul>
-<li><p>方法</p>
-<ul>
-<li>可视化 - Visualization</li>
-<li>基于语料库</li>
-<li>基于探究</li>
-<li>基于因果关系</li>
-<li>杂项</li>
-</ul>
-</li>
-<li><p>Visualization 可视化</p>
-<ul>
-<li>定性以及主观。</li>
-<li>由于大量的人为参与，它无法扩展到整个网络。</li>
-<li>很难解释在不同环境中获得多个角色的多义神经元。</li>
-<li>它在识别组神经元方面无效。</li>
-<li>并非所有神经元都是视觉上可解释的。</li>
-</ul>
-</li>
-<li><p>Corpus-based Methods 基于语料库</p>
-<ul>
-<li>汇总数据激活的统计数据来发现神经元的作用</li>
-<li>基于语料库的方法是全局解释方法，因为它们解释了神经元在一组输入中的作用</li>
-<li>将神经元作为输入并识别神经元已经学习的概念的方法（概念搜索）<ul>
-<li>简单来说，早期是 “看神经元对哪些 5 个词的组合最敏感，然后人来猜它代表什么”；后面则是 “看神经元对哪些完整句子最敏感，然后通过分析句子结构自动提炼出它代表的词或短语概念”，后者更高效，减少了人工依赖。</li>
-</ul>
-</li>
-<li>将概念作为输入并标识学习概念的神经元的其他方法（神经元搜索）<ul>
-<li>对语料中每个句子，根据神经元激活值阈值生成<strong>二值掩码（binary mask）</strong>。同样为每个概念生成二值掩码（标记其在句子中是否出现）。计算神经元掩码与概念掩码的<strong>交并比（IoU）</strong>，用于生成组合解释。</li>
-<li>将神经元的<strong>原始激活值直接作为预测分数</strong>。计算每个神经元和每个概念的<strong>平均精度（Average Precision）</strong>。</li>
-<li>聚焦于<strong>具有目标概念的实例</strong>（不是对语料库中的所有句子进行分析，而是先做一次 “筛选”—— 把要研究的 “概念”的句子挑出来。）计算神经元在这些实例上的<strong>平均激活值（Mean Activation Value）</strong>。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Probing-based Methods 基于探究</p>
-<ul>
-<li><strong>Linear Classifiers</strong>：利用待分析模型生成的激活向量（可理解为模型中神经元的激活值组成的向量）来训练一个线性分类器，让它学习我们感兴趣的概念。分类器赋予神经元（作为分类器的特征）的权重，就代表了这些神经元对该概念的重要性分数。</li>
-<li><strong>Gaussian Classifier</strong> ：其核心假设是：神经元的激活值服从高斯分布（正态分布）。他们的具体做法是，在所有神经元的激活值上拟合一个 “多元高斯分布”（即同时考虑多个神经元之间的关联，建模它们的联合分布），并为单个神经元提取了专门的 “探测指标”（用于衡量该神经元与目标概念的关联）。缺点：<strong>需要有监督数据来训练分类器</strong>。</li>
-</ul>
-</li>
-<li><p>Causation-based methods 基于因果关系的方法 </p>
-<ul>
-<li><p>Ablation ：消融的核心逻辑是<strong>通过改变单个神经元的值，来观察它对模型整体性能的影响</strong>，以此判断该神经元的重要性。具体操作是将目标神经元的值 “钳位”（固定）为 0 或某个特定值，然后对比模型在操作前后的性能变化。</p>
-<p>它主要有两种应用方向：</p>
-<ul>
-<li><strong>无监督场景：识别模型层面的关键神经元</strong>目标是找到对整个模型性能至关重要的神经元。判断标准是：当某个神经元被消融（值被固定）后，模型的整体性能（如准确率）出现大幅下降，这类神经元就是 “关键神经元”。</li>
-<li><strong>有监督场景：识别特定输出类别的关键神经元</strong>目标是找到与模型某个具体输出类别（比如识别图片中的 “猫”）相关的神经元。判断标准是：当消融某个神经元后，模型对该类别的预测结果发生 “翻转”（比如原本预测为 “猫”，现在预测为 “狗”），这类神经元就是该类别对应的 “关键神经元”。此时，这个输出类别就是判断神经元重要性的 “参照概念”。</li>
-</ul>
-<p>消融技术的主要局限在于<strong>难以识别 “神经元组” 的作用</strong>。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>Knowledge Attribution Method</strong>：</p>
-<ul>
-<li>模型（特指 Transformer 模型）所学习的事实性知识，是存储在其前馈神经网络（feed-forward neural networks）的神经元中的</li>
-<li>使用了 “集成梯度（Integrated Gradient）” 这一归因技术，来计算并筛选出对表达某个 “关系事实” 最重要的那部分神经元（即 “top neurons”）。</li>
-<li>只能识别出对预测重要的神经元，但无法直接知道这些神经元具体学习并代表了什么 “概念”。</li>
-</ul>
-</li>
-<li><p><strong>Matrix Factorization</strong></p>
-<ul>
-<li>矩阵分解（MF）的核心是将一个大型矩阵分解为多个小型 “因子矩阵” 的乘积，其中每个 “因子” 代表一组功能相似的元素。</li>
-<li>当输入一个句子时，模型各层的神经元激活值会构成一个<strong>激活矩阵</strong>。</li>
-<li>MF 可用于分解这个激活矩阵，分解后得到的每个 “因子” 对应一组神经元，这组神经元共同学习并编码了某个特定的 “概念”（比如语法结构、语义角色等）。</li>
-<li>而且目前几乎没有学术研究将 MF 方法用于分析 NLP 模型</li>
-<li><strong>优势</strong>：与此前讨论的其他无监督解释方法相比，MF 的固有优势是能直接 “发现神经元组”（即通过分解自动将功能相似的神经元聚类），无需提前定义聚类规则。</li>
-<li><strong>核心局限 </strong>：<ol>
-<li>如何确定 “因子数量”（即需要将激活矩阵分解为多少个因子 / 神经元组）是一个非 trivial的问题，目前缺乏统一且有效的确定方法。</li>
-<li>“局部解释” 意味着 MF 只能解释<strong>单个输入（如一个句子）对应的模型激活模式</strong>，而无法提供 “全局解释”（即跨多个输入的、模型普遍遵循的规律）</li>
-</ol>
-</li>
-</ul>
-</li>
-<li><p>Clustering Methods</p>
-<ul>
-<li>聚类是另一种以无监督方式分析神经元组的有效方法。直觉是，如果一组神经元学习了一个特定的概念，那么它们的激活就会形成一个集群</li>
-<li>局限性与矩阵分解方法类似，聚类数量是一个超参数，需要根据经验预先定义或选择。少量聚类可能导致同一组中出现不同的神经元，而大量聚类可能导致相似的神经元分裂成不同组</li>
-</ul>
-</li>
-<li><p>Multi-model Search</p>
-<ul>
-<li>为同一任务训练的不同模型，会共享该任务的关键信息。如果一个概念对任务很重要，那么所有为该任务优化的模型都应该学习到它。因此，该搜索的目标是<strong>识别在不同模型间行为相似的神经元</strong>—— 这些神经元很可能编码了任务的核心概念。</li>
-<li><p><strong>聚合相关系数</strong>：为了从不同角度凸显模型特征，他们用四种方法对每个神经元的相关系数进行聚合，每种方法目标不同：</p>
-<ul>
-<li><strong>最大相关（Max Correlation）</strong>：捕捉在多个模型中都 “强烈出现” 的概念（即该神经元与其他模型中某些神经元的相关性极高）。</li>
-<li><strong>最小相关（Min Correlation）</strong>：筛选那些与很多模型都有相关性、但并非顶级相关的神经元（强调普遍性而非极致相关性）。</li>
-<li><strong>回归排序（Regression Ranking）</strong>：寻找自身信息分散在其他模型多个神经元中的 “个体神经元”（即该神经元的功能由其他模型的多个神经元共同实现）。</li>
-<li><strong>SVCCA</strong>：捕捉那些可能分散在 “比完整表示维度更低” 的信息（聚焦低维空间中的关键信息分布）。</li>
-</ul>
-</li>
-<li><p>局限性：即需要人类来解释这些被识别出的神经元的底层含义（比如这个神经元具体编码了什么概念）</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h2><ul>
-<li><p>Ablation</p>
-<ul>
-<li>在模型中的某个神经元前后判断其对输出效果的影响</li>
-</ul>
-</li>
-<li><p>Classification Performance</p>
-<ul>
-<li>给定与某个概念相关的显著神经元后，评估其正确性的简单方法如下：<ol>
-<li><strong>训练分类器</strong>：将这些显著神经元作为特征，训练一个分类器来预测目标概念。</li>
-<li><strong>性能对比</strong>：将该分类器的性能，与另外两个分类器进行比较 —— 一个用<strong>随机神经元</strong>训练，另一个用<strong>最不重要的神经元</strong>训练。</li>
-<li><strong>衡量有效性</strong>：通过这种相对性能对比，来衡量所选显著神经元的有效性（即它们是否真的与目标概念相关）。</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>Information Theoretic Metric<ul>
-<li>用<strong>信息论指标（如互信息）</strong> 来解读深度学习 NLP 模型表示的思路。</li>
-</ul>
-</li>
-<li>Concept Selectivity<ul>
-<li>概念选择性用于衡量<strong>单个神经元</strong>与 “发现的概念（discovered concept）” 之间的 “对齐程度（alignment）”，本质是评估神经元对目标概念的 “专属响应程度”。</li>
-<li>判断一个神经元是否 “专门” 对某个语言概念敏感，而不受其他概念干扰。</li>
-<li>计算方式<ul>
-<li>计算一个神经元在两类句子上的平均激活值：一类是 “包含目标概念的句子”，另一类是 “不包含目标概念的句子”。</li>
-<li>用这两个平均激活值的<strong>差值</strong>作为 “选择性” 的量化结果。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Qualitative Evaluation<ul>
-<li>将 “可视化” 作为一种非量化（定性）的评估工具，用于分析那些被选中的神经元。它不依赖具体数值，而是通过直观呈现来判断神经元的特性。</li>
-<li>可视化单独使用时效果有限，<strong>与其他方法结合才能最大化其价值</strong>，具体体现在 “缩小搜索范围” 上：<ul>
-<li>结合<strong>概念搜索（Concept Search）</strong>：可将分析范围缩小到 “对特定概念激活程度高的神经元”，避免无差别分析所有神经元。</li>
-<li>结合<strong>基于探针的方法（Probing-based methods）</strong>：能进一步聚焦到 “对这些高激活概念而言，功能最显著的神经元”，让评估更具针对性。</li>
-</ul>
-</li>
-<li>简单来说，可视化负责 “直观展示神经元在关注什么”，而其他方法负责 “告诉我们该看哪些神经元”，二者结合让对神经元的定性评估更高效、准确。</li>
-</ul>
-</li>
-</ul>
-<h2 id="主要发现"><a href="#主要发现" class="headerlink" title="主要发现"></a>主要发现</h2><ul>
-<li><p>Concept Discovery</p>
-<ul>
-<li>神经元可以学习单词在输入句子中的位置</li>
-<li>捕捉“否定”的神经元</li>
-<li>捕获相关概念组的神经元，如西兰花、面条、胡萝卜</li>
-<li>神经元捕获了核心语言概念，如名词、动词形式、数字、冠词等</li>
-<li>负责概念的神经元数量因概念的性质而异<ul>
-<li>封闭类 (随着语言的发展，不会添加新词) 的神经元数量较少</li>
-<li>开放类 (随着语言的发展，不断添加新单词,例如“chillax”，一个混合了“chill”和“relax”的动词。)的神经元数量较多</li>
-</ul>
-</li>
-<li>神经元表现出单义和多义行为其中少数神经元是单一概念所独有的，而其他神经元本质上是多义的，并捕获了多个概念</li>
-<li>捕获了远程依赖性包括引号和括号</li>
-</ul>
-</li>
-<li><p>Architectural Analysis</p>
-<ul>
-<li><p>人类语言的结构是分层的，形态和音韵位于底部，其次是词位，然后是句法结构。发现捕捉单词形态的神经元主要存在于较低层和中间层，而学习句法的神经元则存在于较高层。</p>
-</li>
-<li><p>学习同形异义词的神经元分布在整个网络中</p>
-</li>
-<li><p>信息并不是在任何单个层中离散保存的，而是分布的，并且冗余存在于网络中</p>
-</li>
-<li><p>BERT（自动编码器）中的语言知识在整个网络中高度分布，而 XLNet（自回归）则由来自几层的神经元主要负责一个概念</p>
-<p><img src="https://s2.loli.net/2025/10/22/FjsbqfXiCrcDgHZ.png" alt=""></p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="神经元探测的应用"><a href="#神经元探测的应用" class="headerlink" title="神经元探测的应用"></a>神经元探测的应用</h2><ul>
-<li>控制模型的行为<ul>
-<li>在 NMT 模型中确定了开关神经元，这些神经元对现在时动词积极激活，对过去时动词负激活。通过纵这些神经元的值，他们能够在推理过程中成功地将输出翻译从现在时更改为过去时</li>
-<li>即时操纵输出，例如，它可用于针对种族和性别等敏感属性消除模型输出的偏差</li>
-</ul>
-</li>
-<li>模型蒸馏和效率<ul>
-<li>通过利用Transformer模型中的层和神经元特定冗余，对于模型的提炼和提升效率很有用。</li>
-</ul>
-</li>
-<li>域适应，提高泛化性<ul>
-<li>以针对在微调目标域模型时灾难性遗忘一般域的问题。</li>
-<li>三步适应过程：<ul>
-<li>根据神经元的重要性对神经元进行排名</li>
-<li>从网络中修剪不重要的神经元并使用师生框架进行重新训练</li>
-<li>将网络扩展到其原始大小并向域内微调，冻结显着神经元并仅调整不重要的神经元。</li>
-</ul>
-</li>
-<li>使用这种方法有助于避免对一般域的灾难性遗忘，同时还可以在域内数据上获得最佳性能。</li>
-</ul>
-</li>
-<li>生成组合解释</li>
-</ul>
-<h2 id="未来问题和未来研究方向"><a href="#未来问题和未来研究方向" class="headerlink" title="未来问题和未来研究方向"></a>未来问题和未来研究方向</h2><ul>
-<li>目前大多数分析方法在寻找与某概念相关的神经元时，<strong>忽略了神经元之间的相互作用</strong>，仅关注单个神经元的贡献。</li>
-<li>大量的解释研究依赖于人类定义的语言概念来探测模型。这些模型可能没有严格遵守人类定义的概念并学习有关该语言的新概念。</li>
-<li>当前研究多聚焦于 “知识如何编码在模型表征中”，但对 “模型预测时是否真的使用这些编码的知识” 探索较少。</li>
-<li>神经元解释的工作缺乏标准的评估基准，因此在相同模型上进行的研究无法比较。</li>
-<li>神经元分析方法的理论基础以及它们旨在捕捉的关于给定概念的观点各不相同。这导致神经元的选择可能不会在所有方</li>
-</ul>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>大模型理解</tag>
-        <tag>神经元</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Visual Adversarial Examples的论文阅读</title>
     <url>/posts/542407868/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
@@ -604,60 +604,6 @@
       </tags>
   </entry>
   <entry>
-    <title>喜欢的一些话</title>
-    <url>/posts/1527653848/</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
-<blockquote>
-<p>喜欢的话</p>
-</blockquote>
-<span id="more"></span>
-<ol>
-<li>以其不争，故天下莫能与之争</li>
-<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
-<li>大音希声  大美无言 大成若缺</li>
-<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
-<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
-<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
-<li>每一个问题，都是对你缺点的量身定做，逃避是没有用的，困难是客观的，问题是有解的</li>
-<li>对自己的可控的事，永远坚持；对于别人主导的事情，随时放弃；对于无能为力的事情，听天由命</li>
-</ol>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>消除参考文献中未用的文献</title>
-    <url>/posts/717737966/</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
-<blockquote>
-<p>消除参考文献中未用的文献</p>
-</blockquote>
-<span id="more"></span>
-<ul>
-<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
-</li>
-<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
-</li>
-<li><p>然后使用bibtool工具，使用下面代码</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>便可以得到新的精简之后的文件</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>论文</tag>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>博客更新流程</title>
     <url>/posts/1108567586/</url>
     <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/BXYQDxA7y8dIeqg.webp" alt="image.png" style="zoom: 15%;" />          </p>
@@ -691,6 +637,60 @@
       </categories>
       <tags>
         <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>消除参考文献中未用的文献</title>
+    <url>/posts/717737966/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>消除参考文献中未用的文献</p>
+</blockquote>
+<span id="more"></span>
+<ul>
+<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
+</li>
+<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
+</li>
+<li><p>然后使用bibtool工具，使用下面代码</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>便可以得到新的精简之后的文件</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>论文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>喜欢的一些话</title>
+    <url>/posts/1527653848/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2024/11/25/Xhb2w9pEc3dgxOf.png" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>喜欢的话</p>
+</blockquote>
+<span id="more"></span>
+<ol>
+<li>以其不争，故天下莫能与之争</li>
+<li>置身事外，谁都可以心平气和；身处其中，谁还可以从容淡定</li>
+<li>大音希声  大美无言 大成若缺</li>
+<li>因为肩负重担，所以披星戴月；因为心中有梦，所以奋不顾身。</li>
+<li>我读得了圣贤书，却管不了这窗外事，心生怜悯是我，袖手旁观也是我，共情是我，无能为力也是我，这情绪像尖刀一样反复刺痛着我的心</li>
+<li>我们的心很容易动摇，你得学会哄他，不管发生了什么，告诉你的心“伙计，平安无事”。你也许会问，这样能解决问题吗。答案是不能，但是你得到了面对困难的勇气</li>
+<li>每一个问题，都是对你缺点的量身定做，逃避是没有用的，困难是客观的，问题是有解的</li>
+<li>对自己的可控的事，永远坚持；对于别人主导的事情，随时放弃；对于无能为力的事情，听天由命</li>
+</ol>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>生活</tag>
       </tags>
   </entry>
 </search>
