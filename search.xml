@@ -529,6 +529,159 @@
       </tags>
   </entry>
   <entry>
+    <title>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</title>
+    <url>/posts/3200710163/</url>
+    <content><![CDATA[<p>​    <img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt="image.png" style="zoom: 60%;" />          </p>
+<blockquote>
+<p>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION"><a href="#TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION" class="headerlink" title="TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION"></a>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</h1><h2 id="1-背景知识"><a href="#1-背景知识" class="headerlink" title="1. 背景知识"></a>1. 背景知识</h2><ul>
+<li><p>现有基于先验的熵模型在跨域场景中因分布偏移导致联合概率分布不准确，进而影响性能。</p>
+<ul>
+<li><strong>先验（Hyperprior）</strong>：先验是一种用于图像压缩的模型，它通过引入一个额外的先验概率模型来捕获潜在表示中的空间依赖性。这个先验模型通常用于编码潜在表示的尺度信息，从而提高压缩效率。</li>
+<li><strong>熵模型</strong>：熵模型用于估计潜在表示的分布，以便进行有效的熵编码。在基于超先验的模型中，熵模型通常假设潜在表示的元素是独立的，但实际上这些元素之间可能存在统计依赖性。</li>
+</ul>
+</li>
+<li><p>传统联合优化潜在变量和辅助信息的方法（如HLR）在域内有效，但在跨域任务中因概率分布失配导致码率显著增加。</p>
+<ul>
+<li><p>在跨域任务中，由于训练数据和测试数据的分布不同，潜在变量和辅助信息的概率分布也会发生变化。例如，自然图像和屏幕内容图像在统计特性上存在显著差异。当模型在自然图像上训练后，其潜在变量和辅助信息的概率分布是基于自然图像的特性学习的。然而，当模型应用于屏幕内容图像时，这些概率分布不再适用，导致模型无法准确地编码潜在变量和辅助信息。</p>
+<p><img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt=""></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-研究方法"><a href="#2-研究方法" class="headerlink" title="2. 研究方法"></a>2. 研究方法</h2><h3 id="边缘化近似角度揭示降解原因"><a href="#边缘化近似角度揭示降解原因" class="headerlink" title="边缘化近似角度揭示降解原因"></a>边缘化近似角度揭示降解原因</h3><ul>
+<li><strong>边缘化近似</strong>：在图像压缩中，边缘化近似是指通过将联合概率分布 <em>p</em>(<em>y</em>,<em>z</em>) 近似为边缘概率分布 <em>p</em>(<em>y</em>) 和 <em>p</em>(<em>z</em>) 的乘积，来简化模型的计算。其中，<em>y</em> 表示潜在变量，<em>z</em> 表示超先验中的侧信息。</li>
+<li><strong>降解原因</strong>：在跨域场景中，由于源域和目标域之间的分布差异，基于超先验的熵模型无法准确地捕获潜在变量和侧信息的联合概率分布。这导致了边缘化近似的不准确，进而影响了码率（Rate）和重构质量（Distortion）的权衡（R-D性能）。具体来说，模型在编码潜在变量和侧信息时需要更多的比特来表示这些变量，从而导致码率显著增加</li>
+</ul>
+<h4 id="分布正则化方法"><a href="#分布正则化方法" class="headerlink" title="分布正则化方法"></a>分布正则化方法</h4><ul>
+<li><p>分布正则化通过对模型参数引入先验分布，分布正则化通过鼓励学习更好的联合概率近似，来减少跨域场景中的额外率消耗。</p>
+</li>
+<li><p>例如，通过分布正则化，可以调整潜在变量的分布，使其更接近目标域的分布，从而在跨域压缩中实现更好的率失真性能。</p>
+<ul>
+<li>zmt：表示在第 <em>m</em> 次迭代中更新的<strong>超先验</strong>（hyperprior）中的<strong>侧信息</strong>（side information）。侧信息 <em>z</em> 是从潜在变量 <em>y</em> 中提取的，用于帮助编码和解码过程。在跨域任务中，由于分布偏移，<em>z</em> 的概率分布可能与训练时的分布不同，导致编码效率下降。</li>
+<li>ymt：表示在第 <em>m</em> 次迭代中更新的<strong>潜在变量</strong>。潜在变量 <em>y</em> 是图像经过编码器变换后的表示，用于捕获图像的重要特征。在跨域任务中，由于分布偏移，<em>y</em> 的概率分布也可能与训练时的分布不同，导致编码效率下降。</li>
+</ul>
+</li>
+<li><h3 id="β-的作用"><a href="#β-的作用" class="headerlink" title="β 的作用"></a>β 的作用</h3><ul>
+<li><strong>控制正则化强度</strong>：<em>β</em> 用于控制正则化项 −log<em>p</em>(<em>z<strong>m</strong>t</em>∣<em>y<strong>m</strong>t</em>) 在总损失函数中的权重。较大的 <em>β</em> 值会增加正则化项的影响，从而更严格地限制模型的复杂度，有助于防止过拟合。</li>
+<li><strong>平衡模型复杂度和泛化能力</strong>：通过调整 <em>β</em>，可以平衡模型的复杂度和泛化能力。较小的 <em>β</em> 值可能会导致模型过拟合，而较大的 <em>β</em> 值可能会导致模型欠拟合。</li>
+<li>最好0.1</li>
+</ul>
+</li>
+</ul>
+<h4 id="Dropout变分推断"><a href="#Dropout变分推断" class="headerlink" title="- Dropout变分推断"></a>- Dropout变分推断</h4><ul>
+<li>文章利用dropout变分推断（DVI）作为贝叶斯近似，来估计潜在变量的后验分布。通过多次蒙特卡洛（MC）采样，估计后验分布的均值和方差，从而实现对潜在变量的优化。</li>
+<li>例如，DVI通过随机丢弃神经元的方式，模拟潜在变量的不确定性，为潜在变量的优化提供了更准确的估计。</li>
+</ul>
+<h2 id="3-实验与结果"><a href="#3-实验与结果" class="headerlink" title="3. 实验与结果"></a>3. 实验与结果</h2><h3 id="3-1-数据集"><a href="#3-1-数据集" class="headerlink" title="3.1 数据集"></a>3.1 数据集</h3><ul>
+<li>文章使用了六个不同的数据集，包括自然图像（Kodak）、屏幕内容图像（SIQAD、SCID、CCT）、像素风格游戏图像和绘画图像（DomainNet）</li>
+</ul>
+<h3 id="3-3-性能评估"><a href="#3-3-性能评估" class="headerlink" title="3.3 性能评估"></a>3.3 性能评估</h3><h4 id="3-3-1-R-D曲线与BD-rate"><a href="#3-3-1-R-D曲线与BD-rate" class="headerlink" title="3.3.1 R-D曲线与BD-rate"></a>3.3.1 R-D曲线与BD-rate</h4><ul>
+<li>通过计算不同方法的峰值信噪比（PSNR）和每像素比特数（bpp），绘制R-D曲线，并计算（BD-rate）来评估性能。BD-rate越低，表示性能越好。</li>
+</ul>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li><p>超参数β和MC采样次数T对性能影响显著（如表3），但文中未提供自动调参方案。此外，不同数据集可能需特定参数配置，限制了方法的即插即用性。</p>
+</li>
+<li><p>dropout变分推断是什么意思，我的理解是测试的时候也用dropout, 只是换了种解释方法</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+        <tag>Test-Time Adaptation（TTA）</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Adversarial Examples的论文阅读</title>
+    <url>/posts/542407868/</url>
+    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
+<blockquote>
+<p>Visual Adversarial Examples Jailbreak Aligned Large Language Models 论文学习</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models"><a href="#Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models" class="headerlink" title="Visual Adversarial Examples Jailbreak Aligned Large Language Models"></a>Visual Adversarial Examples Jailbreak Aligned Large Language Models</h2><blockquote>
+<p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
+<p><a href="https://arxiv.org/pdf/2306.13213">文章链接</a></p>
+<p><a href="https://github.com/Unispac/Visual-Adversarial-Examples-Jailbreak-Large-Language-Models">论文代码</a></p>
+</blockquote>
+<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
+<p><strong>对抗性样本</strong>：</p>
+<ul>
+<li>对抗性样本是指在原始数据上添加特定的干扰，这个干扰是像素级别的修改，人几乎看不出来变化，但是会对模型产生误导</li>
+<li>一般是基于梯度来生成，使之损失变大</li>
+</ul>
+<p><strong>红队攻击（Red-teaming）</strong>：</p>
+<p>在AI和机器学习中，红队攻击指的是通过模拟恶意用户的行为，主动寻找并利用模型的潜在弱点</p>
+<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
+<p>此文在多模态大模型的产生下，提出了对抗性攻击，这种攻击通过改变图片中的像素，来进行攻击，这种攻击被证明是非常有效的。与此同时，这种对抗性攻击，还有通用性，对绝大多数的对齐模型都能迁移起作用。最后还展望了对其他种类模态信息的探究。</p>
+<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
+<p><strong>革命</strong>：最近人们将视觉融合到LLM中的兴趣激增，导致VLM的出现。</p>
+<p><strong>复杂性</strong>：然而，多模态模型增加了模型的复杂度和攻击面，这对于确保模型的安全性和可靠性构成了挑战。</p>
+<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
+<p><strong>视觉输入</strong>：因为视觉输入的连续性和高维性，使之成为对抗攻击的薄弱之处</p>
+<p><strong>白盒攻击</strong>：知道模型权重，便于进行生成对抗性样本</p>
+<p><strong>黑盒攻击</strong>：不知道模型权重，但是这个攻击可以在多个模型之间移植，实现全面性，实现更加通用的攻击</p>
+<p><strong>对抗性样本</strong>：针对的并不是一种特殊的指令，而是一种通用的指令，能够使绝大多数有害文本可以得到输出</p>
+<p><strong>对抗性样本构建方式</strong>：</p>
+<ul>
+<li><p>攻击的目的是构建一个对抗性输入 <script type="math/tex">x_{\text{adv}}</script>，使模型在给定 <script type="math/tex">x_{\text{adv}}</script>时，倾向于生成一些有害内容 Y=<script type="math/tex">\{y_i\}_{i=1}^m</script>​</p>
+</li>
+<li><p>Y是一个小型语料库，其中包含一些有害的语句，这些语句会用来指导攻击</p>
+</li>
+<li><p>通过调整<script type="math/tex">x_{\text{adv}}</script>来最大化模型生成有害内容的概率</p>
+</li>
+<li><p>对于每个有害语句 <script type="math/tex">y_i</script>，它的生成概率用 <script type="math/tex">p(y_i \mid x_{\text{adv}})</script> 表示。通过取负对数<script type="math/tex">(−log)</script>​，问题变成了最小化目标函数</p>
+</li>
+<li><p>而且优化的过程受限于一个空间<strong><em>B</em></strong>，这个空间是用来让图片尽可能看起来正常</p>
+<p><img src="https://s2.loli.net/2024/11/24/YBXuqJTO9rfK8jF.png" style="zoom: 50%;" /></p>
+</li>
+<li><p>最后再将 <script type="math/tex">x_{\text{adv}}</script>和 <script type="math/tex">x_{\text{harm}}</script>​一起送入模型</p>
+</li>
+</ul>
+<p><strong>文本对抗攻击</strong></p>
+<ul>
+<li>将视觉对抗性嵌入替换为具有相等长度的文本对抗性标记</li>
+<li>文本攻击的开销更大，因为文本在其空间更加离散，所以导致计算需求更高</li>
+</ul>
+<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
+<p><strong>评估</strong></p>
+<ul>
+<li><p>三种形式，无对抗性信息，对抗性图像，对抗性文本，且从图中可以看出来，对图像施以越强的对抗，效果越好</p>
+<p><img src="https://s2.loli.net/2024/11/23/fgjypQZhNrX4AMu.png" alt=""></p>
+</li>
+<li><p>用分类器计算毒性属性分数，范围从0到1，对每个对于每个属性，我们计算分数超过0.5阈值的生成文本的比率，并且重复三次</p>
+</li>
+</ul>
+<p><strong>分析攻击</strong></p>
+<ul>
+<li>原来提出的一些削弱攻击的方法不再行之有效，例如对抗性训练 (将对抗性样本作为训练数据) ，因为现在的输出是开放的，与狭义的分类形成对比。而且现在的对抗性干扰不一定是不可察觉的，因此，这些防御所假设的小扰动界限不再适用。</li>
+<li>但是通过向图像之中引入噪声能够在一定程度上中和对抗性攻击</li>
+</ul>
+<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
+<ul>
+<li>传统的对纯文本输入输出的LLM的越狱攻击的难度比较大，因为文本是离散型的。在引入视觉机制后，对系统的越狱攻击就变得比较简单。</li>
+<li>对抗性攻击，通过对图像的改变，来进行攻击是有效的</li>
+</ul>
+<h3 id="7-未来思考"><a href="#7-未来思考" class="headerlink" title="7. 未来思考"></a>7. 未来思考</h3><ul>
+<li>多模态的出现，推测其他模态的信息比如语音等，也存在这样的跨模态攻击</li>
+</ul>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>论文阅读</tag>
+        <tag>深度学习</tag>
+        <tag>大模型安全</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Neuron-level Interpretation of Deep NLP Models: A Survey</title>
     <url>/posts/1183083500/</url>
     <content><![CDATA[<p>​      <img src="https://s2.loli.net/2025/10/22/8y5KbY1NxgahJLt.png" alt="image.png" style="zoom: 50%;" /></p>
@@ -777,74 +930,6 @@
       </tags>
   </entry>
   <entry>
-    <title>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</title>
-    <url>/posts/3200710163/</url>
-    <content><![CDATA[<p>​    <img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt="image.png" style="zoom: 60%;" />          </p>
-<blockquote>
-<p>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</p>
-</blockquote>
-<span id="more"></span>
-<h1 id="TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION"><a href="#TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION" class="headerlink" title="TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION"></a>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</h1><h2 id="1-背景知识"><a href="#1-背景知识" class="headerlink" title="1. 背景知识"></a>1. 背景知识</h2><ul>
-<li><p>现有基于先验的熵模型在跨域场景中因分布偏移导致联合概率分布不准确，进而影响性能。</p>
-<ul>
-<li><strong>先验（Hyperprior）</strong>：先验是一种用于图像压缩的模型，它通过引入一个额外的先验概率模型来捕获潜在表示中的空间依赖性。这个先验模型通常用于编码潜在表示的尺度信息，从而提高压缩效率。</li>
-<li><strong>熵模型</strong>：熵模型用于估计潜在表示的分布，以便进行有效的熵编码。在基于超先验的模型中，熵模型通常假设潜在表示的元素是独立的，但实际上这些元素之间可能存在统计依赖性。</li>
-</ul>
-</li>
-<li><p>传统联合优化潜在变量和辅助信息的方法（如HLR）在域内有效，但在跨域任务中因概率分布失配导致码率显著增加。</p>
-<ul>
-<li><p>在跨域任务中，由于训练数据和测试数据的分布不同，潜在变量和辅助信息的概率分布也会发生变化。例如，自然图像和屏幕内容图像在统计特性上存在显著差异。当模型在自然图像上训练后，其潜在变量和辅助信息的概率分布是基于自然图像的特性学习的。然而，当模型应用于屏幕内容图像时，这些概率分布不再适用，导致模型无法准确地编码潜在变量和辅助信息。</p>
-<p><img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt=""></p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="2-研究方法"><a href="#2-研究方法" class="headerlink" title="2. 研究方法"></a>2. 研究方法</h2><h3 id="边缘化近似角度揭示降解原因"><a href="#边缘化近似角度揭示降解原因" class="headerlink" title="边缘化近似角度揭示降解原因"></a>边缘化近似角度揭示降解原因</h3><ul>
-<li><strong>边缘化近似</strong>：在图像压缩中，边缘化近似是指通过将联合概率分布 <em>p</em>(<em>y</em>,<em>z</em>) 近似为边缘概率分布 <em>p</em>(<em>y</em>) 和 <em>p</em>(<em>z</em>) 的乘积，来简化模型的计算。其中，<em>y</em> 表示潜在变量，<em>z</em> 表示超先验中的侧信息。</li>
-<li><strong>降解原因</strong>：在跨域场景中，由于源域和目标域之间的分布差异，基于超先验的熵模型无法准确地捕获潜在变量和侧信息的联合概率分布。这导致了边缘化近似的不准确，进而影响了码率（Rate）和重构质量（Distortion）的权衡（R-D性能）。具体来说，模型在编码潜在变量和侧信息时需要更多的比特来表示这些变量，从而导致码率显著增加</li>
-</ul>
-<h4 id="分布正则化方法"><a href="#分布正则化方法" class="headerlink" title="分布正则化方法"></a>分布正则化方法</h4><ul>
-<li><p>分布正则化通过对模型参数引入先验分布，分布正则化通过鼓励学习更好的联合概率近似，来减少跨域场景中的额外率消耗。</p>
-</li>
-<li><p>例如，通过分布正则化，可以调整潜在变量的分布，使其更接近目标域的分布，从而在跨域压缩中实现更好的率失真性能。</p>
-<ul>
-<li>zmt：表示在第 <em>m</em> 次迭代中更新的<strong>超先验</strong>（hyperprior）中的<strong>侧信息</strong>（side information）。侧信息 <em>z</em> 是从潜在变量 <em>y</em> 中提取的，用于帮助编码和解码过程。在跨域任务中，由于分布偏移，<em>z</em> 的概率分布可能与训练时的分布不同，导致编码效率下降。</li>
-<li>ymt：表示在第 <em>m</em> 次迭代中更新的<strong>潜在变量</strong>。潜在变量 <em>y</em> 是图像经过编码器变换后的表示，用于捕获图像的重要特征。在跨域任务中，由于分布偏移，<em>y</em> 的概率分布也可能与训练时的分布不同，导致编码效率下降。</li>
-</ul>
-</li>
-<li><h3 id="β-的作用"><a href="#β-的作用" class="headerlink" title="β 的作用"></a>β 的作用</h3><ul>
-<li><strong>控制正则化强度</strong>：<em>β</em> 用于控制正则化项 −log<em>p</em>(<em>z<strong>m</strong>t</em>∣<em>y<strong>m</strong>t</em>) 在总损失函数中的权重。较大的 <em>β</em> 值会增加正则化项的影响，从而更严格地限制模型的复杂度，有助于防止过拟合。</li>
-<li><strong>平衡模型复杂度和泛化能力</strong>：通过调整 <em>β</em>，可以平衡模型的复杂度和泛化能力。较小的 <em>β</em> 值可能会导致模型过拟合，而较大的 <em>β</em> 值可能会导致模型欠拟合。</li>
-<li>最好0.1</li>
-</ul>
-</li>
-</ul>
-<h4 id="Dropout变分推断"><a href="#Dropout变分推断" class="headerlink" title="- Dropout变分推断"></a>- Dropout变分推断</h4><ul>
-<li>文章利用dropout变分推断（DVI）作为贝叶斯近似，来估计潜在变量的后验分布。通过多次蒙特卡洛（MC）采样，估计后验分布的均值和方差，从而实现对潜在变量的优化。</li>
-<li>例如，DVI通过随机丢弃神经元的方式，模拟潜在变量的不确定性，为潜在变量的优化提供了更准确的估计。</li>
-</ul>
-<h2 id="3-实验与结果"><a href="#3-实验与结果" class="headerlink" title="3. 实验与结果"></a>3. 实验与结果</h2><h3 id="3-1-数据集"><a href="#3-1-数据集" class="headerlink" title="3.1 数据集"></a>3.1 数据集</h3><ul>
-<li>文章使用了六个不同的数据集，包括自然图像（Kodak）、屏幕内容图像（SIQAD、SCID、CCT）、像素风格游戏图像和绘画图像（DomainNet）</li>
-</ul>
-<h3 id="3-3-性能评估"><a href="#3-3-性能评估" class="headerlink" title="3.3 性能评估"></a>3.3 性能评估</h3><h4 id="3-3-1-R-D曲线与BD-rate"><a href="#3-3-1-R-D曲线与BD-rate" class="headerlink" title="3.3.1 R-D曲线与BD-rate"></a>3.3.1 R-D曲线与BD-rate</h4><ul>
-<li>通过计算不同方法的峰值信噪比（PSNR）和每像素比特数（bpp），绘制R-D曲线，并计算（BD-rate）来评估性能。BD-rate越低，表示性能越好。</li>
-</ul>
-<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li><p>超参数β和MC采样次数T对性能影响显著（如表3），但文中未提供自动调参方案。此外，不同数据集可能需特定参数配置，限制了方法的即插即用性。</p>
-</li>
-<li><p>dropout变分推断是什么意思，我的理解是测试的时候也用dropout, 只是换了种解释方法</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>论文阅读</tag>
-        <tag>Test-Time Adaptation（TTA）</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>博客更新流程</title>
     <url>/posts/1108567586/</url>
     <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/BXYQDxA7y8dIeqg.webp" alt="image.png" style="zoom: 15%;" />          </p>
@@ -881,88 +966,31 @@
       </tags>
   </entry>
   <entry>
-    <title>Visual Adversarial Examples的论文阅读</title>
-    <url>/posts/542407868/</url>
-    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
+    <title>消除参考文献中未用的文献</title>
+    <url>/posts/717737966/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
 <blockquote>
-<p>Visual Adversarial Examples Jailbreak Aligned Large Language Models 论文学习</p>
+<p>消除参考文献中未用的文献</p>
 </blockquote>
 <span id="more"></span>
-<h2 id="Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models"><a href="#Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models" class="headerlink" title="Visual Adversarial Examples Jailbreak Aligned Large Language Models"></a>Visual Adversarial Examples Jailbreak Aligned Large Language Models</h2><blockquote>
-<p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
-<p><a href="https://arxiv.org/pdf/2306.13213">文章链接</a></p>
-<p><a href="https://github.com/Unispac/Visual-Adversarial-Examples-Jailbreak-Large-Language-Models">论文代码</a></p>
-</blockquote>
-<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
-<p><strong>对抗性样本</strong>：</p>
 <ul>
-<li>对抗性样本是指在原始数据上添加特定的干扰，这个干扰是像素级别的修改，人几乎看不出来变化，但是会对模型产生误导</li>
-<li>一般是基于梯度来生成，使之损失变大</li>
-</ul>
-<p><strong>红队攻击（Red-teaming）</strong>：</p>
-<p>在AI和机器学习中，红队攻击指的是通过模拟恶意用户的行为，主动寻找并利用模型的潜在弱点</p>
-<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
-<p>此文在多模态大模型的产生下，提出了对抗性攻击，这种攻击通过改变图片中的像素，来进行攻击，这种攻击被证明是非常有效的。与此同时，这种对抗性攻击，还有通用性，对绝大多数的对齐模型都能迁移起作用。最后还展望了对其他种类模态信息的探究。</p>
-<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
-<p><strong>革命</strong>：最近人们将视觉融合到LLM中的兴趣激增，导致VLM的出现。</p>
-<p><strong>复杂性</strong>：然而，多模态模型增加了模型的复杂度和攻击面，这对于确保模型的安全性和可靠性构成了挑战。</p>
-<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
-<p><strong>视觉输入</strong>：因为视觉输入的连续性和高维性，使之成为对抗攻击的薄弱之处</p>
-<p><strong>白盒攻击</strong>：知道模型权重，便于进行生成对抗性样本</p>
-<p><strong>黑盒攻击</strong>：不知道模型权重，但是这个攻击可以在多个模型之间移植，实现全面性，实现更加通用的攻击</p>
-<p><strong>对抗性样本</strong>：针对的并不是一种特殊的指令，而是一种通用的指令，能够使绝大多数有害文本可以得到输出</p>
-<p><strong>对抗性样本构建方式</strong>：</p>
-<ul>
-<li><p>攻击的目的是构建一个对抗性输入 <script type="math/tex">x_{\text{adv}}</script>，使模型在给定 <script type="math/tex">x_{\text{adv}}</script>时，倾向于生成一些有害内容 Y=<script type="math/tex">\{y_i\}_{i=1}^m</script>​</p>
+<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
 </li>
-<li><p>Y是一个小型语料库，其中包含一些有害的语句，这些语句会用来指导攻击</p>
+<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
 </li>
-<li><p>通过调整<script type="math/tex">x_{\text{adv}}</script>来最大化模型生成有害内容的概率</p>
+<li><p>然后使用bibtool工具，使用下面代码</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>对于每个有害语句 <script type="math/tex">y_i</script>，它的生成概率用 <script type="math/tex">p(y_i \mid x_{\text{adv}})</script> 表示。通过取负对数<script type="math/tex">(−log)</script>​，问题变成了最小化目标函数</p>
+<li><p>便可以得到新的精简之后的文件</p>
 </li>
-<li><p>而且优化的过程受限于一个空间<strong><em>B</em></strong>，这个空间是用来让图片尽可能看起来正常</p>
-<p><img src="https://s2.loli.net/2024/11/24/YBXuqJTO9rfK8jF.png" style="zoom: 50%;" /></p>
-</li>
-<li><p>最后再将 <script type="math/tex">x_{\text{adv}}</script>和 <script type="math/tex">x_{\text{harm}}</script>​一起送入模型</p>
-</li>
-</ul>
-<p><strong>文本对抗攻击</strong></p>
-<ul>
-<li>将视觉对抗性嵌入替换为具有相等长度的文本对抗性标记</li>
-<li>文本攻击的开销更大，因为文本在其空间更加离散，所以导致计算需求更高</li>
-</ul>
-<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
-<p><strong>评估</strong></p>
-<ul>
-<li><p>三种形式，无对抗性信息，对抗性图像，对抗性文本，且从图中可以看出来，对图像施以越强的对抗，效果越好</p>
-<p><img src="https://s2.loli.net/2024/11/23/fgjypQZhNrX4AMu.png" alt=""></p>
-</li>
-<li><p>用分类器计算毒性属性分数，范围从0到1，对每个对于每个属性，我们计算分数超过0.5阈值的生成文本的比率，并且重复三次</p>
-</li>
-</ul>
-<p><strong>分析攻击</strong></p>
-<ul>
-<li>原来提出的一些削弱攻击的方法不再行之有效，例如对抗性训练 (将对抗性样本作为训练数据) ，因为现在的输出是开放的，与狭义的分类形成对比。而且现在的对抗性干扰不一定是不可察觉的，因此，这些防御所假设的小扰动界限不再适用。</li>
-<li>但是通过向图像之中引入噪声能够在一定程度上中和对抗性攻击</li>
-</ul>
-<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
-<ul>
-<li>传统的对纯文本输入输出的LLM的越狱攻击的难度比较大，因为文本是离散型的。在引入视觉机制后，对系统的越狱攻击就变得比较简单。</li>
-<li>对抗性攻击，通过对图像的改变，来进行攻击是有效的</li>
-</ul>
-<h3 id="7-未来思考"><a href="#7-未来思考" class="headerlink" title="7. 未来思考"></a>7. 未来思考</h3><ul>
-<li>多模态的出现，推测其他模态的信息比如语音等，也存在这样的跨模态攻击</li>
 </ul>
 ]]></content>
       <categories>
-        <category>论文阅读</category>
+        <category>教程</category>
       </categories>
       <tags>
-        <tag>学习</tag>
-        <tag>论文阅读</tag>
-        <tag>深度学习</tag>
-        <tag>大模型安全</tag>
+        <tag>教程</tag>
+        <tag>论文</tag>
       </tags>
   </entry>
   <entry>
@@ -989,34 +1017,6 @@
       </categories>
       <tags>
         <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>消除参考文献中未用的文献</title>
-    <url>/posts/717737966/</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
-<blockquote>
-<p>消除参考文献中未用的文献</p>
-</blockquote>
-<span id="more"></span>
-<ul>
-<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
-</li>
-<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
-</li>
-<li><p>然后使用bibtool工具，使用下面代码</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>便可以得到新的精简之后的文件</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>教程</tag>
-        <tag>论文</tag>
       </tags>
   </entry>
 </search>
