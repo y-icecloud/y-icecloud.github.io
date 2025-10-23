@@ -419,6 +419,24 @@
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     <span title="站点阅读时长">35 分钟</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
 </div><div>
 <!--添加网站运行时间-->
 <span>网站已经运行</span>
@@ -455,47 +473,158 @@
         <span id="site_total_read_count">Loading...</span>
     </div>
     <script>
-        async function sleep(ms = 1000) {
-            return await new Promise(resolve => {
-                const timer = setTimeout(() => {
-                    clearTimeout(timer)
-                    return resolve()
-                }, ms)
-            })
+        async function getTotalViews() {
+            const app_id = 'l6vc1litTpQx4mCK8hCqWobE-MdYXbMMI';
+            const app_key = 'ClispqF2NPhz4uDx1t3DsIGb';
+            const api_server = `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+            
+            try {
+                const response = await fetch(`${api_server}/1.1/classes/Counter`, {
+                    method: 'GET',
+                    headers: {
+                        'X-LC-Id': app_id,
+                        'X-LC-Key': app_key,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                const totalViews = data.results.reduce((sum, item) => sum + (item.time || 0), 0);
+                document.getElementById("site_total_read_count").innerHTML = ` ${totalViews} 次`;
+            } catch (error) {
+                console.error('Failed to fetch total views:', error);
+                document.getElementById("site_total_read_count").innerHTML = ' 0 次';
+            }
         }
-        async function site_read_count() {
-            const className = 'Counter',
-                query = new AV.Query(className)
-            return query.find()
-                .then(_ => _.map(i => i.attributes.time))
-                .then(_ => _.reduce((a, b) => a + b))
+        
+        // 等待页面加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', getTotalViews);
+        } else {
+            getTotalViews();
         }
-        new Promise(resolve => {
-            const timer = setInterval(() => {
-                if (typeof AV !== "undefined") {
-                    clearInterval(timer)
-                    return resolve()
-                }
-            }, 250)
-        })
-            .then(() => site_read_count())
-            .then(_ => {
-                const s = ` ${_} 次`
-                document.getElementById("site_total_read_count").innerHTML = s
-            })
-            .catch(e => console.error(e.message))
     </script>
 </div>
 
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
 
 
 
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"l6vc1litTpQx4mCK8hCqWobE-MdYXbMMI","app_key":"ClispqF2NPhz4uDx1t3DsIGb","server_url":"https://l6vc1lit.api.lncldglobal.com","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
 
 
       </div>
