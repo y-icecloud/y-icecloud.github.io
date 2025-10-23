@@ -36,8 +36,8 @@
 <meta property="article:published_time" content="2024-11-25T11:53:17.000Z">
 <meta property="article:modified_time" content="2024-11-25T11:53:17.000Z">
 <meta property="article:author" content="y-icecloud">
-<meta property="article:tag" content="学习">
 <meta property="article:tag" content="论文阅读">
+<meta property="article:tag" content="学习">
 <meta property="article:tag" content="深度学习">
 <meta property="article:tag" content="大模型安全">
 <meta name="twitter:card" content="summary">
@@ -450,8 +450,8 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 学习</a>
               <a href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" rel="tag"><i class="fa fa-tag"></i> 论文阅读</a>
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 学习</a>
               <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
               <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%AE%89%E5%85%A8/" rel="tag"><i class="fa fa-tag"></i> 大模型安全</a>
           </div>
@@ -653,46 +653,6 @@
     }
     setInterval(createtime, 500)
 </script>
-</div>
-
-<div>
-    <!--添加总阅读次数-->
-    <div>
-        <span>本站总访问量</span>
-        <span id="site_total_read_count">Loading...</span>
-    </div>
-    <script>
-        async function getTotalViews() {
-            const app_id = 'l6vc1litTpQx4mCK8hCqWobE-MdYXbMMI';
-            const app_key = 'ClispqF2NPhz4uDx1t3DsIGb';
-            const api_server = `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
-            
-            try {
-                const response = await fetch(`${api_server}/1.1/classes/Counter`, {
-                    method: 'GET',
-                    headers: {
-                        'X-LC-Id': app_id,
-                        'X-LC-Key': app_key,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                const data = await response.json();
-                const totalViews = data.results.reduce((sum, item) => sum + (item.time || 0), 0);
-                document.getElementById("site_total_read_count").innerHTML = ` ${totalViews} 次`;
-            } catch (error) {
-                console.error('Failed to fetch total views:', error);
-                document.getElementById("site_total_read_count").innerHTML = ' 0 次';
-            }
-        }
-        
-        // 等待页面加载完成后执行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', getTotalViews);
-        } else {
-            getTotalViews();
-        }
-    </script>
 </div>
 
 
