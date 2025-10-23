@@ -554,48 +554,44 @@
 <div>
     <!--自定义文章访问量统计-->
     <script>
-        // 等待不蒜子脚本加载完成
-        function waitForBusuanzi() {
-            if (typeof busuanzi !== 'undefined') {
-                // 不蒜子已加载，获取每篇文章的访问量
-                loadPostViews();
-            } else {
-                // 继续等待
-                setTimeout(waitForBusuanzi, 100);
-            }
-        }
-        
+        // 等待页面加载完成后执行
         function loadPostViews() {
             // 查找所有文章访问量元素
             const postViewElements = document.querySelectorAll('[id^="busuanzi_value_page_pv_posts_"]');
             
             postViewElements.forEach(element => {
-                const postId = element.id.replace('busuanzi_value_page_pv_', '');
-                const postPath = '/' + postId.replace(/_/g, '/') + '/';
+                // 先显示一个默认值，然后等待不蒜子更新
+                element.textContent = '0';
                 
-                // 使用不蒜子的API获取访问量
-                fetch(`https://busuanzi.ibruce.info/busuanzi?jsonpCallback=busuanzi&url=${encodeURIComponent(window.location.origin + postPath)}`)
-                    .then(response => response.text())
-                    .then(text => {
-                        // 解析JSONP响应
-                        const jsonpMatch = text.match(/busuanzi\((.+)\)/);
-                        if (jsonpMatch) {
-                            const data = JSON.parse(jsonpMatch[1]);
-                            element.textContent = data.site_pv || '0';
+                // 为每个元素添加一个定时器，定期检查不蒜子是否已经更新
+                const checkInterval = setInterval(() => {
+                    // 检查是否有不蒜子的数据
+                    if (element.textContent !== '0' && element.textContent !== '') {
+                        clearInterval(checkInterval);
+                    } else {
+                        // 尝试从不蒜子的全局变量中获取数据
+                        if (typeof busuanzi !== 'undefined' && busuanzi.site_pv) {
+                            element.textContent = busuanzi.site_pv;
+                            clearInterval(checkInterval);
                         }
-                    })
-                    .catch(error => {
-                        console.log('Failed to load view count for', postPath);
+                    }
+                }, 1000);
+                
+                // 10秒后停止检查
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    if (element.textContent === '0' || element.textContent === '') {
                         element.textContent = '0';
-                    });
+                    }
+                }, 10000);
             });
         }
         
-        // 页面加载完成后开始等待不蒜子
+        // 页面加载完成后开始执行
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', waitForBusuanzi);
+            document.addEventListener('DOMContentLoaded', loadPostViews);
         } else {
-            waitForBusuanzi();
+            loadPostViews();
         }
     </script>
 </div>
@@ -620,14 +616,6 @@
       </span>
       <span class="site-pv" title="总访问量">
         <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_page_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="page-pv" title="阅读次数">
-        <span id="busuanzi_value_page_pv"></span>
       </span>
     </span>
 </div>
