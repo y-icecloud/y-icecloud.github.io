@@ -276,8 +276,8 @@
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/posts/3790135051/" itemprop="url">
-            <span itemprop="name">FigStep的论文阅读</span>
+          <a class="post-title-link" href="/posts/2910022633/" itemprop="url">
+            <span itemprop="name">MM-SafetyBench的论文阅读</span>
           </a>
       </div>
 
@@ -296,8 +296,8 @@
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/posts/2910022633/" itemprop="url">
-            <span itemprop="name">MM-SafetyBench的论文阅读</span>
+          <a class="post-title-link" href="/posts/3790135051/" itemprop="url">
+            <span itemprop="name">FigStep的论文阅读</span>
           </a>
       </div>
 
@@ -514,68 +514,67 @@
 <div>
     <!--自定义文章访问量统计-->
     <script>
-        // 等待不蒜子脚本加载完成
-        function waitForBusuanzi() {
-            if (typeof busuanzi !== 'undefined') {
-                loadPostViews();
-            } else {
-                setTimeout(waitForBusuanzi, 100);
-            }
-        }
-        
-        function loadPostViews() {
+        // 简化的文章访问量统计
+        function initPostViews() {
+            console.log('开始初始化文章访问量...');
+            
             // 查找所有文章访问量元素
             const postViewElements = document.querySelectorAll('[id^="busuanzi_value_page_pv_"]');
+            console.log('找到', postViewElements.length, '个文章访问量元素');
             
-            postViewElements.forEach(element => {
+            postViewElements.forEach((element, index) => {
+                console.log(`处理第${index + 1}个元素:`, element.id);
+                
+                // 先显示默认值
+                element.textContent = '0';
+                
+                // 获取文章ID
                 const postId = element.id.replace('busuanzi_value_page_pv_', '');
-                // 处理posts_xxx_格式的ID，转换为正确的路径
-                let postPath;
+                console.log('文章ID:', postId);
+                
+                // 构建文章URL
+                let postUrl;
                 if (postId.startsWith('posts_')) {
                     // posts_1375690775_ -> /posts/1375690775/
-                    postPath = '/' + postId.replace(/_/g, '/');
+                    postUrl = window.location.origin + '/' + postId.replace(/_/g, '/');
                 } else {
-                    // 其他格式直接转换
-                    postPath = '/' + postId.replace(/_/g, '/') + '/';
+                    postUrl = window.location.origin + '/' + postId.replace(/_/g, '/') + '/';
                 }
+                console.log('文章URL:', postUrl);
                 
-                // 创建临时的script标签来调用不蒜子API
-                const script = document.createElement('script');
-                script.src = `https://busuanzi.ibruce.info/busuanzi?jsonpCallback=busuanziCallback_${postId}&url=${encodeURIComponent(window.location.origin + postPath)}`;
-                
-                // 创建全局回调函数
-                window[`busuanziCallback_${postId}`] = function(data) {
-                    element.textContent = data.site_pv || '0';
-                    // 清理script标签
-                    document.head.removeChild(script);
-                    // 清理全局函数
-                    delete window[`busuanziCallback_${postId}`];
-                };
-                
-                // 添加到页面
-                document.head.appendChild(script);
-                
-                // 设置超时
-                setTimeout(() => {
-                    if (element.textContent === '' || element.textContent === '0') {
+                // 使用fetch API获取访问量
+                fetch(`https://busuanzi.ibruce.info/busuanzi?jsonpCallback=callback&url=${encodeURIComponent(postUrl)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log('API响应:', data);
+                        try {
+                            // 解析JSONP响应
+                            const jsonpMatch = data.match(/callback\((.+)\)/);
+                            if (jsonpMatch) {
+                                const result = JSON.parse(jsonpMatch[1]);
+                                console.log('解析结果:', result);
+                                element.textContent = result.site_pv || '0';
+                            } else {
+                                console.log('无法解析JSONP响应');
+                                element.textContent = '0';
+                            }
+                        } catch (e) {
+                            console.error('解析响应失败:', e);
+                            element.textContent = '0';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('API请求失败:', error);
                         element.textContent = '0';
-                    }
-                    // 清理
-                    if (document.head.contains(script)) {
-                        document.head.removeChild(script);
-                    }
-                    if (window[`busuanziCallback_${postId}`]) {
-                        delete window[`busuanziCallback_${postId}`];
-                    }
-                }, 5000);
+                    });
             });
         }
         
-        // 页面加载完成后开始等待不蒜子
+        // 页面加载完成后执行
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', waitForBusuanzi);
+            document.addEventListener('DOMContentLoaded', initPostViews);
         } else {
-            waitForBusuanzi();
+            initPostViews();
         }
     </script>
 </div>
