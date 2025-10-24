@@ -45,6 +45,9 @@
     lang   : 'zh-CN'
   };
 </script>
+<!-- Referrer Policy for 不蒜子 -->
+<meta name="referrer" content="no-referrer-when-downgrade">
+
 <!-- 文章加密 -->
 <script>
     (function(){
@@ -558,31 +561,47 @@
                 }
                 console.log('文章URL:', postUrl);
                 
-                // 使用fetch API获取访问量
-                fetch(`https://busuanzi.ibruce.info/busuanzi?jsonpCallback=callback&url=${encodeURIComponent(postUrl)}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        console.log('API响应:', data);
-                        try {
-                            // 解析JSONP响应
-                            const jsonpMatch = data.match(/callback\((.+)\)/);
-                            if (jsonpMatch) {
-                                const result = JSON.parse(jsonpMatch[1]);
-                                console.log('解析结果:', result);
-                                element.textContent = result.site_pv || '0';
-                            } else {
-                                console.log('无法解析JSONP响应');
-                                element.textContent = '0';
-                            }
-                        } catch (e) {
-                            console.error('解析响应失败:', e);
-                            element.textContent = '0';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('API请求失败:', error);
-                        element.textContent = '0';
-                    });
+                // 使用JSONP方式调用不蒜子API
+                const callbackName = `busuanziCallback_${Date.now()}_${index}`;
+                const script = document.createElement('script');
+                
+                // 创建全局回调函数
+                window[callbackName] = function(data) {
+                    console.log('不蒜子API响应:', data);
+                    element.textContent = data.site_pv || '0';
+                    // 清理
+                    document.head.removeChild(script);
+                    delete window[callbackName];
+                };
+                
+                // 设置script标签
+                script.src = `https://busuanzi.ibruce.info/busuanzi?jsonpCallback=${callbackName}&url=${encodeURIComponent(postUrl)}`;
+                script.onerror = function() {
+                    console.error('不蒜子API请求失败');
+                    element.textContent = '0';
+                    // 清理
+                    if (document.head.contains(script)) {
+                        document.head.removeChild(script);
+                    }
+                    delete window[callbackName];
+                };
+                
+                // 添加到页面
+                document.head.appendChild(script);
+                
+                // 设置超时
+                setTimeout(() => {
+                    if (element.textContent === '0') {
+                        console.log('不蒜子API超时，使用默认值');
+                    }
+                    // 清理
+                    if (document.head.contains(script)) {
+                        document.head.removeChild(script);
+                    }
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                    }
+                }, 10000);
             });
         }
         
