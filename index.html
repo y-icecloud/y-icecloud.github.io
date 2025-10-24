@@ -1380,7 +1380,7 @@
         
         function loadPostViews() {
             // 查找所有文章访问量元素
-            const postViewElements = document.querySelectorAll('[id^="busuanzi_value_page_pv_posts_"]');
+            const postViewElements = document.querySelectorAll('[id^="busuanzi_value_page_pv_"]');
             
             postViewElements.forEach(element => {
                 const postId = element.id.replace('busuanzi_value_page_pv_', '');

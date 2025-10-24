@@ -1,119 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>From neural activations to concepts: A survey on explaining concepts in neural networks</title>
-    <url>/posts/1375690775/</url>
-    <content><![CDATA[<p>​                      <img src="https://s2.loli.net/2025/10/23/2MXrpwNePI8ycYq.png" alt="image.png" style="zoom: 50%;" />          </p>
-<blockquote>
-<p>From neural activations to concepts: A survey on explaining concepts in neural</p>
-</blockquote>
-<span id="more"></span>
-<h1 id="From-neural-activations-to-concepts-A-survey-on-explaining-concepts-in-neural-networks"><a href="#From-neural-activations-to-concepts-A-survey-on-explaining-concepts-in-neural-networks" class="headerlink" title="From neural activations to concepts: A survey on explaining concepts in neural networks"></a>From neural activations to concepts: A survey on explaining concepts in neural networks</h1><blockquote>
-<p><a href="https://journals.sagepub.com/doi/pdf/10.3233/NAI-240743">https://journals.sagepub.com/doi/pdf/10.3233/NAI-240743</a></p>
-</blockquote>
-<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><ul>
-<li>人工智能的不可解释性</li>
-<li>解释神经网络如何学习概念，因为概念可以作为构建复杂规则的原语</li>
-<li>识别的概念可以帮助推理器干预神经网络，从而通过修改概念来调试网络</li>
-</ul>
-<h2 id="Neuron-level-explanations"><a href="#Neuron-level-explanations" class="headerlink" title="Neuron-level explanations"></a>Neuron-level explanations</h2><h3 id="Using-similarities-between-concepts-and-activations"><a href="#Using-similarities-between-concepts-and-activations" class="headerlink" title="Using similarities between concepts and activations"></a>Using similarities between concepts and activations</h3><ul>
-<li>使用概念和激活之间的相似性进行神经元级解释，用输入文字和图像得到激活图，最后与原始图像的mask进行对比，如果 IoU 值高于给定阈值，则卷积滤波器表示概念 C。</li>
-</ul>
-<p><img src="https://s2.loli.net/2025/10/23/2MXrpwNePI8ycYq.png" alt=""></p>
-<ul>
-<li>怀疑会不会不只是一个卷积滤波器表示一个概念，而是一些卷积滤波器的线性组合</li>
-<li>利用CLIP, 因为CLIP 将图像和文本嵌入到同一矢量空间中，从而可以测量文本和图像之间的相似性，解释卷积滤波器所代表的概念，他们为滤波器选择一组激活度最高的图像，然后使用CLIP测量的图像与每个概念进行匹配，最后找到最匹配的概念。</li>
-</ul>
-<h3 id="Using-causal-relationships-between-concepts-and-activations"><a href="#Using-causal-relationships-between-concepts-and-activations" class="headerlink" title="Using causal relationships between concepts and activations"></a>Using causal relationships between concepts and activations</h3><ul>
-<li>分析通过干预输入和测量神经激活来展现输入概念和神经元之间的因果关系</li>
-<li><p>方法1：将每个句子分解为一组连续的单词序列来提取概念，这些单词序列形成一个有意义的块。然后，通过首先重复概念以创建一个固定长度的合成句子（以规范不同概念的输入对单位的贡献），然后测量过滤器激活的平均值来衡量每个概念对过滤器激活的贡献。</p>
-</li>
-<li><p>方法2：首先将神经元的激活修改为在对输入进行干预时神经元将输出的激活（例如，输入句子中的主语从单数更改为复数），然后测量有和没有干预的动词正确变位预测之间的变化量</p>
-</li>
-<li>GPT-2 中中间层前馈模块中的神经元与编码事实信息和实现权重修饰符以改变权重值和改变事实知识最相关。</li>
-</ul>
-<p><img src="https://s2.loli.net/2025/10/23/IoPpS7VADHRxh1G.png" alt=""></p>
-<h2 id="Layer-level-explanations"><a href="#Layer-level-explanations" class="headerlink" title="Layer-level explanations"></a>Layer-level explanations</h2><ul>
-<li>概念也可以用整层来表示，而不是神经元或卷积滤波器。</li>
-<li>在层级解释中，有两种方法很突出：第一种是用概念激活向量进行解释，第二种是探测。两种方法之间的主要区别在于，线性二进制分类器是针对每个概念训练的；而在探测中，多类分类器是使用通常与某些语言特征（例如，情感，词性标签）相关的分类标签进行训练的。</li>
-</ul>
-<h3 id="Using-vectors-to-explain-concepts-Concept-activation-vectors（概念激活向量）"><a href="#Using-vectors-to-explain-concepts-Concept-activation-vectors（概念激活向量）" class="headerlink" title="Using vectors to explain concepts: Concept activation vectors（概念激活向量）"></a>Using vectors to explain concepts: Concept activation vectors（概念激活向量）</h3><ul>
-<li><p>概念激活向量（CAV），是一种用于<strong>神经网络层级概念解释</strong>的连续向量。其核心逻辑如下</p>
-<p><strong>1. 网络结构分解：</strong><br>将神经网络 $f$ 拆分为两部分 $f = f^{\top} \circ f^{\perp}$，其中 $f^{\perp}: \mathbb{R}^m \rightarrow \mathbb{R}^n$ 是“底层网络”，包含我们感兴趣的卷积层 $l$；$f^{\top}$ 是“顶层输出层”。</p>
-<p><strong>2. 概念识别流程：</strong>  </p>
-<p>为了识别某一概念 $C$（如“条纹”“鸟类”），需准备正例 $x_C^{+}$（含概念 $C$）和负例 $x_C^{-}$（不含概念 $C$）。将其输入 $f^{\perp}$ 后，收集对应激活 $f^{\perp}(x_C^{+}) \in \mathbb{R}^n$ 和 $f^{\perp}(x_C^{-}) \in \mathbb{R}^n$。</p>
-<p><strong>3. CAV 的生成：</strong>  </p>
-<p>训练一个线性分类器来区分 $f^{\perp}(x_C^{+})$ 和 $f^{\perp}(x_C^{-})$，该分类器决策边界的法向量 $v_C \in \mathbb{R}^n$ 即为概念 $C$ 的概念激活向量（CAV）。</p>
-</li>
-<li><p>CAV 的核心应用之一是测试输入与概念的相关性（<strong>TCAV, Testing with CAVs</strong>），用于衡量“概念 $C$ 对类别标签 $k$ 预测的影响程度”。其原理是：对数据集 $\mathcal{X}$ 中所有类别为 $k$ 的图像 $x$，将其潜在向量 $f^{\perp}(x)$ 沿 $v_C$ 方向移动（即 $f^{\perp}(x) + \varepsilon \cdot v_C$），观察 $f^{\top}$ 对标签 $k$ 的对数概率变化，以此量化概念 $C$ 对类别 $k$​ 预测的“正影响概率”。</p>
-<blockquote>
-<p>比如说：</p>
-<p>假设我们想知道“鸟类特征（$C$）对‘翠鸟类别（$k$）’的预测有多大正影响”，过程如下：</p>
-<p><strong>步骤 1：</strong> 取所有真实类别为“翠鸟”的图像 $x$，即一批翠鸟的照片。  </p>
-<p><strong>步骤 2：</strong> 对每个 $x$，计算其潜在向量 $f^{\perp}(x)$，得到这些翠鸟在“底层特征空间”中的表示。  </p>
-<p><strong>步骤 3：</strong> 沿 $v_C$ 方向移动潜在向量，即计算 $f^{\perp}(x) + \varepsilon \cdot v_C$，相当于“为每张翠鸟图片添加更多‘鸟类共性特征’（如羽毛纹理、喙的形状等）”。  </p>
-<p><strong>步骤 4：</strong> 将移动后的向量输入 $f^{\top}$，观察类别 $k$ 的对数概率。如果模型对“翠鸟（$k$）”的对数概率上升，说明“注入鸟类特征后，模型更确信这是翠鸟”，即概念 $C$ 对类别 $k$ 有正影响。  </p>
-<p><strong>步骤 5：</strong> 统计“正影响”的占比：在所有真实为翠鸟的图像中，计算满足“注入 $C$ 后对数概率上升”的样本比例，该比例即为“概念 $C$ 对类别 $k$ 的正影响概率”。</p>
-</blockquote>
-</li>
-<li><p>这一过程的本质是<strong>量化 “概念 C 的存在，多大程度上让模型更倾向于预测类别 k”</strong>。如果正影响概率很高，说明 “概念 C 是类别 k 的强特征”（比如 “鸟类特征” 对 “翠鸟” 分类的正影响概率很高）；反之，则说明概念 C 对类别 k 的预测贡献很小。</p>
-</li>
-<li>问题：原 CAV 方法需手动准备 “带概念标签的图像数据集”，改进<ul>
-<li>无标签概念的自动生成<ul>
-<li>对同一类别的图像进行<strong>多分辨率分割</strong>，将分割后的 “区域簇” 作为 “隐式概念” 用于 TCAV</li>
-</ul>
-</li>
-<li>端到端的 CAV 与模型联合训练<ul>
-<li>不再单独准备概念数据集，而是在 “原始图像分类任务” 中同时训练 CAV 和模型。具体来说，计算 “向量值分数”（每个值对应一个可学习的概念，反映卷积层感受野中该概念的存在程度），并将分数输入多层感知机（MLP）完成分类，从而实现 “概念学习与分类任务的协同优化”。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://s2.loli.net/2025/10/23/YRwBJOsVT1jh4Ez.png" alt=""></p>
-<h3 id="Using-classifiers-to-explain-concepts-Probing（探测）"><a href="#Using-classifiers-to-explain-concepts-Probing（探测）" class="headerlink" title="Using classifiers to explain concepts: Probing（探测）"></a>Using classifiers to explain concepts: Probing（探测）</h3><ul>
-<li>探测使用分类器来解释概念。然而，探测不是为每个概念训练二进制线性分类器来测量概念在层激活中的存在，而是使用分类器进行多类分类</li>
-<li>其标签通常代表 NLP 中的语言特征（例如，情感、词性标签）</li>
-</ul>
-<p><img src="https://s2.loli.net/2025/10/23/qt4JYK3SoGRdQwn.png" alt=""></p>
-<h3 id="Using-localist-representations-Concept-bottleneck-models-概念瓶颈模型"><a href="#Using-localist-representations-Concept-bottleneck-models-概念瓶颈模型" class="headerlink" title="Using localist representations: Concept bottleneck models (概念瓶颈模型)"></a>Using localist representations: Concept bottleneck models (概念瓶颈模型)</h3><ul>
-<li><p>每个概念都由模型f的瓶颈层中的一个唯一神经元表示</p>
-</li>
-<li><p>概念瓶颈模型（<strong>Concept Bottleneck Model, CBM</strong>）的整体结构可拆解为三个部分，通过函数组合（$\circ$）构成完整模型 $f = f^{\top} \circ f_{l} \circ f^{\perp}$。各部分功能如下：</p>
-<p><strong>1. 底部模块（$f^{\perp}$）：</strong>  </p>
-<p>通常由预训练模型的底层构成，作用是从输入（如图片、文本）中提取基础特征。</p>
-<p><strong>2. 瓶颈层（$f_{l}$）：</strong>  </p>
-<p>作为核心模块，一般是一个线性层。它将 $f^{\perp}$ 提取的基础特征映射到“概念空间”，输出每个概念在当前输入中的强度（例如：“这张图中‘猫’的概念强度是 0.8，‘狗’是 0.1”）。</p>
-<p><strong>3. 顶部预测器（$f^{\top}$）：</strong>  </p>
-<p>接收瓶颈层输出的“概念强度”，并基于这些概念进行最终任务预测（如分类或回归）。  </p>
-<p>这种结构的优势在于<strong>可解释性</strong>——能够明确知道是哪些概念（如“有尾巴”“有胡须”）导致了模型的预测结果（如“这是猫”）。</p>
-</li>
-</ul>
-<p><img src="https://s2.loli.net/2025/10/23/96FX8svueKUYRpG.png" alt=""></p>
-<ul>
-<li><strong>核心局限</strong>：训练瓶颈层时，除了任务标签（如 “这是猫”），还需要<strong>概念标签（如 “图中有尾巴、有胡须”）</strong>。但很多任务中，人工标注概念标签成本高或难以获取。</li>
-<li><strong>最新解决思路</strong>：无需人工标注概念标签，而是通过<strong>外部资源自动获取任务相关的概念集</strong>，具体步骤如下：<ul>
-<li>获取概念集，从外部资源中筛选与任务相关的概念，例如：<ul>
-<li>知识库；</li>
-<li>常见词汇库（如 2 万个英文常用词）；</li>
-<li>大语言模型（如 GPT-3）生成的概念。</li>
-</ul>
-</li>
-<li><strong>概念嵌入（$v_C$）</strong>：用 CLIP（一种视觉 - 语言模型）将每个概念词（如 “尾巴”“胡须”）转化为向量（$v_C$​）。</li>
-<li><strong>计算概念强度</strong>：通过计算 “输入特征（f⊥(x)）” 与 “概念向量（$v_C$）” 的余弦相似度，自动得到输入 x 中每个概念 C 的强度，替代人工标注的概念标签。</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>大模型理解</tag>
-        <tag>神经元</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>FigStep的论文阅读</title>
     <url>/posts/3790135051/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/12/01/hq9WksMYbzmgZe1.png" alt="image.png"></p>
@@ -250,196 +137,107 @@
       </tags>
   </entry>
   <entry>
-    <title>MM-SafetyBench的论文阅读</title>
-    <url>/posts/2910022633/</url>
-    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
+    <title>From neural activations to concepts: A survey on explaining concepts in neural networks</title>
+    <url>/posts/1375690775/</url>
+    <content><![CDATA[<p>​                      <img src="https://s2.loli.net/2025/10/23/2MXrpwNePI8ycYq.png" alt="image.png" style="zoom: 50%;" />          </p>
 <blockquote>
-<p>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models 论文学习</p>
+<p>From neural activations to concepts: A survey on explaining concepts in neural</p>
 </blockquote>
 <span id="more"></span>
-<h2 id="MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models"><a href="#MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models" class="headerlink" title="MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models"></a>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</h2><p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
-<p><a href="https://arxiv.org/pdf/2311.17600">原文链接</a></p>
-<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
-<h4 id="1-1视觉模块和语言模块连接方式"><a href="#1-1视觉模块和语言模块连接方式" class="headerlink" title="1.1视觉模块和语言模块连接方式"></a>1.1视觉模块和语言模块连接方式</h4><ol>
-<li><strong>线性投影</strong>：使用线性投影将视觉标记 (visual tokens) 的维度与文本标记 (text tokens) 的维度对齐</li>
-<li><strong>可学习的查询</strong>：使用可学习的查询来提取与文本相关的视觉信息，并固定视觉标记的长度。</li>
-<li><strong>利用Few-shot</strong>: 利用few-shot使模形快速适应新的任务</li>
-</ol>
-<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
-<p>此文出于对多模态大模型很容易被破坏的缘故，提出了MM SafetyBench数据集，用于对MLLM进行安全评估，总共有13个场景，5040个文本图像对。还提出用用扩散模型和排版生成的图像，来创建图像提示，以绕过MLLM中的安全性防御机制</p>
-<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
-<ul>
-<li><strong>差距</strong>：LLM的安全问题得到了广泛讨论，还有安全对齐的措施，但是MLLM的安全问题仍然研究不足</li>
-<li><strong>评估</strong>：缺乏一个较好的数据集对MLLM进行安全性评估</li>
-<li><strong>动机</strong>：当图片与文字相关时，模型会激活视觉模块，这一模块，通常没有进行安全性对齐；当两者不相关的时候，语言模块占据主导地位，导致攻击失败</li>
-</ul>
-<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
-<h4 id="4-1-有效性"><a href="#4-1-有效性" class="headerlink" title="4.1 有效性"></a>4.1 有效性</h4><p>当使用图像文本对的时候，对MLLM的攻击显得就很有效</p>
-<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
-<h4 id="4-2-数据集的构建"><a href="#4-2-数据集的构建" class="headerlink" title="4.2 数据集的构建"></a>4.2 数据集的构建</h4><ol>
-<li><strong>生成问题</strong>：使用 GPT-4 来生成问题，而且一个问题对应的是三个图像</li>
-<li><strong>提取关键短语</strong>：<ul>
-<li>首先，有两种不同的场景<ul>
-<li>每个问题都包含一个有害短语</li>
-<li>每个问题都包含一个政治话题</li>
-</ul>
-</li>
-<li>然后提取之后用于第三步，图像的生成</li>
-</ul>
-</li>
-<li><strong>查询到图像的转换</strong>：<ul>
-<li>基于扩散模型</li>
-<li>排版图形，使用Pillow，来对图像进行绘图</li>
-<li>扩散模型+排版图形，将两者连接在一起，扩散模型在上面，排版图形在下面</li>
-</ul>
-</li>
-<li><strong>问题的改写</strong>：根据第一步的问题和第三步生成的图片进行改写生成新的问题</li>
-</ol>
-<h4 id="4-3-模型的评估"><a href="#4-3-模型的评估" class="headerlink" title="4.3 模型的评估"></a>4.3 模型的评估</h4><ol>
-<li>将场景分为三个类别，不同的类别，认为安全的方式不同<ul>
-<li>对于一些类别，如非法活动，不包含任何有害内容，则认为是安全的</li>
-<li>还有有些类别，如政治话题，不响应则认为是安全的</li>
-<li>最后的一些类别，如法律医疗领域，包含免责声明和风险警告则是安全的</li>
-</ul>
-</li>
-<li>利用ASR，平均攻击成功率来评估模型</li>
-<li>利用RR，拒绝率，来反映模型是否准确的识别到恶意查询，并做出拒绝</li>
-</ol>
-<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
-<p><strong>模型设置</strong>：评估了最近发布的12种模型</p>
-<p><strong>实验方式</strong>：使用排版，扩散，基线等方式</p>
-<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
-<ul>
-<li><strong>safety prompt</strong>：提出了safety prompt，使模型能够更好的抵御攻击，这一结果是建立在模型能够遵循指令的条件下</li>
-<li><strong>扩散+排版</strong>大多数情况下效果最好，相比于基线还有单纯的用基线和排版</li>
-<li>没有一个模型能够做到<strong>安全性和智能性</strong>的平衡，详细说来，则是有些模型看似安全实则无法正确做出相应</li>
-<li>附录中还对MLLM Protector做了对比，发现 Safety prompt 即激发自主的安全防御更有效</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts</strong></p>
-<ul>
-<li>介绍FigStep算法，通过将有害指令转换为图像来对VLM进行攻击，并且证明出在具有OCR功能的GPT-4V上也有较高攻击率。</li>
-</ul>
-<p><strong>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</strong></p>
-<ul>
-<li>提出MM-SafetyBench数据集，用来评估多模态大模型，发现其容易受到图文结合的攻击，特别是与文字相关的图片，最后还提出了可以引入安全提示减少攻击成功率。</li>
-</ul>
-<p><strong>Visual Adversarial Examples Jailbreak Aligned Large Language Models</strong></p>
-<ul>
-<li>主要是从对抗性样本上面出发，发现其可以绕开VLM的安全防御，使模形能够生成与训练无关的有害内容，还解锁了模型被禁止的能力。</li>
-</ul>
-<p><strong>对比</strong></p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">Visual Adversarial Examples (2023.8)</th>
-<th style="text-align:center">FigStep (2023.12)</th>
-<th style="text-align:center">MM-SafetyBench (2024.6)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><strong>研究对象</strong></td>
-<td style="text-align:center">VLM</td>
-<td style="text-align:center">VLM</td>
-<td style="text-align:center">MLLM(但主要还是针对VLM)</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>方法特点</strong></td>
-<td style="text-align:center">对抗性图片</td>
-<td style="text-align:center">图形化有害文字</td>
-<td style="text-align:center">文本+图片 (扩散+排版)</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>创新点</strong></td>
-<td style="text-align:center">强调对抗性样本的通用性</td>
-<td style="text-align:center">简单的图形化文字的攻击</td>
-<td style="text-align:center">提出安全评估基准</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>研究模型范围</strong></td>
-<td style="text-align:center">GPT-4V和LLaVA</td>
-<td style="text-align:center">6种VLM+GPT-4V</td>
-<td style="text-align:center">12种开源MLLM</td>
-</tr>
-<tr>
-<td style="text-align:center"><strong>评估方法</strong></td>
-<td style="text-align:center">人工检查与黑盒传递性验证</td>
-<td style="text-align:center">SafeBench基准测试</td>
-<td style="text-align:center">MM SafetyBench数据集(13个场景，5040个文本图像对)</td>
-</tr>
-</tbody>
-</table>
-</div>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>论文阅读</tag>
-        <tag>深度学习</tag>
-        <tag>大模型安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</title>
-    <url>/posts/3200710163/</url>
-    <content><![CDATA[<p>​    <img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt="image.png" style="zoom: 60%;" />          </p>
-<blockquote>
-<p>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</p>
+<h1 id="From-neural-activations-to-concepts-A-survey-on-explaining-concepts-in-neural-networks"><a href="#From-neural-activations-to-concepts-A-survey-on-explaining-concepts-in-neural-networks" class="headerlink" title="From neural activations to concepts: A survey on explaining concepts in neural networks"></a>From neural activations to concepts: A survey on explaining concepts in neural networks</h1><blockquote>
+<p><a href="https://journals.sagepub.com/doi/pdf/10.3233/NAI-240743">https://journals.sagepub.com/doi/pdf/10.3233/NAI-240743</a></p>
 </blockquote>
-<span id="more"></span>
-<h1 id="TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION"><a href="#TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION" class="headerlink" title="TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION"></a>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</h1><h2 id="1-背景知识"><a href="#1-背景知识" class="headerlink" title="1. 背景知识"></a>1. 背景知识</h2><ul>
-<li><p>现有基于先验的熵模型在跨域场景中因分布偏移导致联合概率分布不准确，进而影响性能。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><ul>
+<li>人工智能的不可解释性</li>
+<li>解释神经网络如何学习概念，因为概念可以作为构建复杂规则的原语</li>
+<li>识别的概念可以帮助推理器干预神经网络，从而通过修改概念来调试网络</li>
+</ul>
+<h2 id="Neuron-level-explanations"><a href="#Neuron-level-explanations" class="headerlink" title="Neuron-level explanations"></a>Neuron-level explanations</h2><h3 id="Using-similarities-between-concepts-and-activations"><a href="#Using-similarities-between-concepts-and-activations" class="headerlink" title="Using similarities between concepts and activations"></a>Using similarities between concepts and activations</h3><ul>
+<li>使用概念和激活之间的相似性进行神经元级解释，用输入文字和图像得到激活图，最后与原始图像的mask进行对比，如果 IoU 值高于给定阈值，则卷积滤波器表示概念 C。</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/10/23/2MXrpwNePI8ycYq.png" alt=""></p>
 <ul>
-<li><strong>先验（Hyperprior）</strong>：先验是一种用于图像压缩的模型，它通过引入一个额外的先验概率模型来捕获潜在表示中的空间依赖性。这个先验模型通常用于编码潜在表示的尺度信息，从而提高压缩效率。</li>
-<li><strong>熵模型</strong>：熵模型用于估计潜在表示的分布，以便进行有效的熵编码。在基于超先验的模型中，熵模型通常假设潜在表示的元素是独立的，但实际上这些元素之间可能存在统计依赖性。</li>
+<li>怀疑会不会不只是一个卷积滤波器表示一个概念，而是一些卷积滤波器的线性组合</li>
+<li>利用CLIP, 因为CLIP 将图像和文本嵌入到同一矢量空间中，从而可以测量文本和图像之间的相似性，解释卷积滤波器所代表的概念，他们为滤波器选择一组激活度最高的图像，然后使用CLIP测量的图像与每个概念进行匹配，最后找到最匹配的概念。</li>
+</ul>
+<h3 id="Using-causal-relationships-between-concepts-and-activations"><a href="#Using-causal-relationships-between-concepts-and-activations" class="headerlink" title="Using causal relationships between concepts and activations"></a>Using causal relationships between concepts and activations</h3><ul>
+<li>分析通过干预输入和测量神经激活来展现输入概念和神经元之间的因果关系</li>
+<li><p>方法1：将每个句子分解为一组连续的单词序列来提取概念，这些单词序列形成一个有意义的块。然后，通过首先重复概念以创建一个固定长度的合成句子（以规范不同概念的输入对单位的贡献），然后测量过滤器激活的平均值来衡量每个概念对过滤器激活的贡献。</p>
+</li>
+<li><p>方法2：首先将神经元的激活修改为在对输入进行干预时神经元将输出的激活（例如，输入句子中的主语从单数更改为复数），然后测量有和没有干预的动词正确变位预测之间的变化量</p>
+</li>
+<li>GPT-2 中中间层前馈模块中的神经元与编码事实信息和实现权重修饰符以改变权重值和改变事实知识最相关。</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/10/23/IoPpS7VADHRxh1G.png" alt=""></p>
+<h2 id="Layer-level-explanations"><a href="#Layer-level-explanations" class="headerlink" title="Layer-level explanations"></a>Layer-level explanations</h2><ul>
+<li>概念也可以用整层来表示，而不是神经元或卷积滤波器。</li>
+<li>在层级解释中，有两种方法很突出：第一种是用概念激活向量进行解释，第二种是探测。两种方法之间的主要区别在于，线性二进制分类器是针对每个概念训练的；而在探测中，多类分类器是使用通常与某些语言特征（例如，情感，词性标签）相关的分类标签进行训练的。</li>
+</ul>
+<h3 id="Using-vectors-to-explain-concepts-Concept-activation-vectors（概念激活向量）"><a href="#Using-vectors-to-explain-concepts-Concept-activation-vectors（概念激活向量）" class="headerlink" title="Using vectors to explain concepts: Concept activation vectors（概念激活向量）"></a>Using vectors to explain concepts: Concept activation vectors（概念激活向量）</h3><ul>
+<li><p>概念激活向量（CAV），是一种用于<strong>神经网络层级概念解释</strong>的连续向量。其核心逻辑如下</p>
+<p><strong>1. 网络结构分解：</strong><br>将神经网络 $f$ 拆分为两部分 $f = f^{\top} \circ f^{\perp}$，其中 $f^{\perp}: \mathbb{R}^m \rightarrow \mathbb{R}^n$ 是“底层网络”，包含我们感兴趣的卷积层 $l$；$f^{\top}$ 是“顶层输出层”。</p>
+<p><strong>2. 概念识别流程：</strong>  </p>
+<p>为了识别某一概念 $C$（如“条纹”“鸟类”），需准备正例 $x_C^{+}$（含概念 $C$）和负例 $x_C^{-}$（不含概念 $C$）。将其输入 $f^{\perp}$ 后，收集对应激活 $f^{\perp}(x_C^{+}) \in \mathbb{R}^n$ 和 $f^{\perp}(x_C^{-}) \in \mathbb{R}^n$。</p>
+<p><strong>3. CAV 的生成：</strong>  </p>
+<p>训练一个线性分类器来区分 $f^{\perp}(x_C^{+})$ 和 $f^{\perp}(x_C^{-})$，该分类器决策边界的法向量 $v_C \in \mathbb{R}^n$ 即为概念 $C$ 的概念激活向量（CAV）。</p>
+</li>
+<li><p>CAV 的核心应用之一是测试输入与概念的相关性（<strong>TCAV, Testing with CAVs</strong>），用于衡量“概念 $C$ 对类别标签 $k$ 预测的影响程度”。其原理是：对数据集 $\mathcal{X}$ 中所有类别为 $k$ 的图像 $x$，将其潜在向量 $f^{\perp}(x)$ 沿 $v_C$ 方向移动（即 $f^{\perp}(x) + \varepsilon \cdot v_C$），观察 $f^{\top}$ 对标签 $k$ 的对数概率变化，以此量化概念 $C$ 对类别 $k$​ 预测的“正影响概率”。</p>
+<blockquote>
+<p>比如说：</p>
+<p>假设我们想知道“鸟类特征（$C$）对‘翠鸟类别（$k$）’的预测有多大正影响”，过程如下：</p>
+<p><strong>步骤 1：</strong> 取所有真实类别为“翠鸟”的图像 $x$，即一批翠鸟的照片。  </p>
+<p><strong>步骤 2：</strong> 对每个 $x$，计算其潜在向量 $f^{\perp}(x)$，得到这些翠鸟在“底层特征空间”中的表示。  </p>
+<p><strong>步骤 3：</strong> 沿 $v_C$ 方向移动潜在向量，即计算 $f^{\perp}(x) + \varepsilon \cdot v_C$，相当于“为每张翠鸟图片添加更多‘鸟类共性特征’（如羽毛纹理、喙的形状等）”。  </p>
+<p><strong>步骤 4：</strong> 将移动后的向量输入 $f^{\top}$，观察类别 $k$ 的对数概率。如果模型对“翠鸟（$k$）”的对数概率上升，说明“注入鸟类特征后，模型更确信这是翠鸟”，即概念 $C$ 对类别 $k$ 有正影响。  </p>
+<p><strong>步骤 5：</strong> 统计“正影响”的占比：在所有真实为翠鸟的图像中，计算满足“注入 $C$ 后对数概率上升”的样本比例，该比例即为“概念 $C$ 对类别 $k$ 的正影响概率”。</p>
+</blockquote>
+</li>
+<li><p>这一过程的本质是<strong>量化 “概念 C 的存在，多大程度上让模型更倾向于预测类别 k”</strong>。如果正影响概率很高，说明 “概念 C 是类别 k 的强特征”（比如 “鸟类特征” 对 “翠鸟” 分类的正影响概率很高）；反之，则说明概念 C 对类别 k 的预测贡献很小。</p>
+</li>
+<li>问题：原 CAV 方法需手动准备 “带概念标签的图像数据集”，改进<ul>
+<li>无标签概念的自动生成<ul>
+<li>对同一类别的图像进行<strong>多分辨率分割</strong>，将分割后的 “区域簇” 作为 “隐式概念” 用于 TCAV</li>
 </ul>
 </li>
-<li><p>传统联合优化潜在变量和辅助信息的方法（如HLR）在域内有效，但在跨域任务中因概率分布失配导致码率显著增加。</p>
+<li>端到端的 CAV 与模型联合训练<ul>
+<li>不再单独准备概念数据集，而是在 “原始图像分类任务” 中同时训练 CAV 和模型。具体来说，计算 “向量值分数”（每个值对应一个可学习的概念，反映卷积层感受野中该概念的存在程度），并将分数输入多层感知机（MLP）完成分类，从而实现 “概念学习与分类任务的协同优化”。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/10/23/YRwBJOsVT1jh4Ez.png" alt=""></p>
+<h3 id="Using-classifiers-to-explain-concepts-Probing（探测）"><a href="#Using-classifiers-to-explain-concepts-Probing（探测）" class="headerlink" title="Using classifiers to explain concepts: Probing（探测）"></a>Using classifiers to explain concepts: Probing（探测）</h3><ul>
+<li>探测使用分类器来解释概念。然而，探测不是为每个概念训练二进制线性分类器来测量概念在层激活中的存在，而是使用分类器进行多类分类</li>
+<li>其标签通常代表 NLP 中的语言特征（例如，情感、词性标签）</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/10/23/qt4JYK3SoGRdQwn.png" alt=""></p>
+<h3 id="Using-localist-representations-Concept-bottleneck-models-概念瓶颈模型"><a href="#Using-localist-representations-Concept-bottleneck-models-概念瓶颈模型" class="headerlink" title="Using localist representations: Concept bottleneck models (概念瓶颈模型)"></a>Using localist representations: Concept bottleneck models (概念瓶颈模型)</h3><ul>
+<li><p>每个概念都由模型f的瓶颈层中的一个唯一神经元表示</p>
+</li>
+<li><p>概念瓶颈模型（<strong>Concept Bottleneck Model, CBM</strong>）的整体结构可拆解为三个部分，通过函数组合（$\circ$）构成完整模型 $f = f^{\top} \circ f_{l} \circ f^{\perp}$。各部分功能如下：</p>
+<p><strong>1. 底部模块（$f^{\perp}$）：</strong>  </p>
+<p>通常由预训练模型的底层构成，作用是从输入（如图片、文本）中提取基础特征。</p>
+<p><strong>2. 瓶颈层（$f_{l}$）：</strong>  </p>
+<p>作为核心模块，一般是一个线性层。它将 $f^{\perp}$ 提取的基础特征映射到“概念空间”，输出每个概念在当前输入中的强度（例如：“这张图中‘猫’的概念强度是 0.8，‘狗’是 0.1”）。</p>
+<p><strong>3. 顶部预测器（$f^{\top}$）：</strong>  </p>
+<p>接收瓶颈层输出的“概念强度”，并基于这些概念进行最终任务预测（如分类或回归）。  </p>
+<p>这种结构的优势在于<strong>可解释性</strong>——能够明确知道是哪些概念（如“有尾巴”“有胡须”）导致了模型的预测结果（如“这是猫”）。</p>
+</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/10/23/96FX8svueKUYRpG.png" alt=""></p>
 <ul>
-<li><p>在跨域任务中，由于训练数据和测试数据的分布不同，潜在变量和辅助信息的概率分布也会发生变化。例如，自然图像和屏幕内容图像在统计特性上存在显著差异。当模型在自然图像上训练后，其潜在变量和辅助信息的概率分布是基于自然图像的特性学习的。然而，当模型应用于屏幕内容图像时，这些概率分布不再适用，导致模型无法准确地编码潜在变量和辅助信息。</p>
-<p><img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt=""></p>
-</li>
+<li><strong>核心局限</strong>：训练瓶颈层时，除了任务标签（如 “这是猫”），还需要<strong>概念标签（如 “图中有尾巴、有胡须”）</strong>。但很多任务中，人工标注概念标签成本高或难以获取。</li>
+<li><strong>最新解决思路</strong>：无需人工标注概念标签，而是通过<strong>外部资源自动获取任务相关的概念集</strong>，具体步骤如下：<ul>
+<li>获取概念集，从外部资源中筛选与任务相关的概念，例如：<ul>
+<li>知识库；</li>
+<li>常见词汇库（如 2 万个英文常用词）；</li>
+<li>大语言模型（如 GPT-3）生成的概念。</li>
 </ul>
 </li>
+<li><strong>概念嵌入（$v_C$）</strong>：用 CLIP（一种视觉 - 语言模型）将每个概念词（如 “尾巴”“胡须”）转化为向量（$v_C$​）。</li>
+<li><strong>计算概念强度</strong>：通过计算 “输入特征（f⊥(x)）” 与 “概念向量（$v_C$）” 的余弦相似度，自动得到输入 x 中每个概念 C 的强度，替代人工标注的概念标签。</li>
 </ul>
-<h2 id="2-研究方法"><a href="#2-研究方法" class="headerlink" title="2. 研究方法"></a>2. 研究方法</h2><h3 id="边缘化近似角度揭示降解原因"><a href="#边缘化近似角度揭示降解原因" class="headerlink" title="边缘化近似角度揭示降解原因"></a>边缘化近似角度揭示降解原因</h3><ul>
-<li><strong>边缘化近似</strong>：在图像压缩中，边缘化近似是指通过将联合概率分布 <em>p</em>(<em>y</em>,<em>z</em>) 近似为边缘概率分布 <em>p</em>(<em>y</em>) 和 <em>p</em>(<em>z</em>) 的乘积，来简化模型的计算。其中，<em>y</em> 表示潜在变量，<em>z</em> 表示超先验中的侧信息。</li>
-<li><strong>降解原因</strong>：在跨域场景中，由于源域和目标域之间的分布差异，基于超先验的熵模型无法准确地捕获潜在变量和侧信息的联合概率分布。这导致了边缘化近似的不准确，进而影响了码率（Rate）和重构质量（Distortion）的权衡（R-D性能）。具体来说，模型在编码潜在变量和侧信息时需要更多的比特来表示这些变量，从而导致码率显著增加</li>
-</ul>
-<h4 id="分布正则化方法"><a href="#分布正则化方法" class="headerlink" title="分布正则化方法"></a>分布正则化方法</h4><ul>
-<li><p>分布正则化通过对模型参数引入先验分布，分布正则化通过鼓励学习更好的联合概率近似，来减少跨域场景中的额外率消耗。</p>
-</li>
-<li><p>例如，通过分布正则化，可以调整潜在变量的分布，使其更接近目标域的分布，从而在跨域压缩中实现更好的率失真性能。</p>
-<ul>
-<li>zmt：表示在第 <em>m</em> 次迭代中更新的<strong>超先验</strong>（hyperprior）中的<strong>侧信息</strong>（side information）。侧信息 <em>z</em> 是从潜在变量 <em>y</em> 中提取的，用于帮助编码和解码过程。在跨域任务中，由于分布偏移，<em>z</em> 的概率分布可能与训练时的分布不同，导致编码效率下降。</li>
-<li>ymt：表示在第 <em>m</em> 次迭代中更新的<strong>潜在变量</strong>。潜在变量 <em>y</em> 是图像经过编码器变换后的表示，用于捕获图像的重要特征。在跨域任务中，由于分布偏移，<em>y</em> 的概率分布也可能与训练时的分布不同，导致编码效率下降。</li>
-</ul>
-</li>
-<li><h3 id="β-的作用"><a href="#β-的作用" class="headerlink" title="β 的作用"></a>β 的作用</h3><ul>
-<li><strong>控制正则化强度</strong>：<em>β</em> 用于控制正则化项 −log<em>p</em>(<em>z<strong>m</strong>t</em>∣<em>y<strong>m</strong>t</em>) 在总损失函数中的权重。较大的 <em>β</em> 值会增加正则化项的影响，从而更严格地限制模型的复杂度，有助于防止过拟合。</li>
-<li><strong>平衡模型复杂度和泛化能力</strong>：通过调整 <em>β</em>，可以平衡模型的复杂度和泛化能力。较小的 <em>β</em> 值可能会导致模型过拟合，而较大的 <em>β</em> 值可能会导致模型欠拟合。</li>
-<li>最好0.1</li>
-</ul>
-</li>
-</ul>
-<h4 id="Dropout变分推断"><a href="#Dropout变分推断" class="headerlink" title="- Dropout变分推断"></a>- Dropout变分推断</h4><ul>
-<li>文章利用dropout变分推断（DVI）作为贝叶斯近似，来估计潜在变量的后验分布。通过多次蒙特卡洛（MC）采样，估计后验分布的均值和方差，从而实现对潜在变量的优化。</li>
-<li>例如，DVI通过随机丢弃神经元的方式，模拟潜在变量的不确定性，为潜在变量的优化提供了更准确的估计。</li>
-</ul>
-<h2 id="3-实验与结果"><a href="#3-实验与结果" class="headerlink" title="3. 实验与结果"></a>3. 实验与结果</h2><h3 id="3-1-数据集"><a href="#3-1-数据集" class="headerlink" title="3.1 数据集"></a>3.1 数据集</h3><ul>
-<li>文章使用了六个不同的数据集，包括自然图像（Kodak）、屏幕内容图像（SIQAD、SCID、CCT）、像素风格游戏图像和绘画图像（DomainNet）</li>
-</ul>
-<h3 id="3-3-性能评估"><a href="#3-3-性能评估" class="headerlink" title="3.3 性能评估"></a>3.3 性能评估</h3><h4 id="3-3-1-R-D曲线与BD-rate"><a href="#3-3-1-R-D曲线与BD-rate" class="headerlink" title="3.3.1 R-D曲线与BD-rate"></a>3.3.1 R-D曲线与BD-rate</h4><ul>
-<li>通过计算不同方法的峰值信噪比（PSNR）和每像素比特数（bpp），绘制R-D曲线，并计算（BD-rate）来评估性能。BD-rate越低，表示性能越好。</li>
-</ul>
-<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
-<li><p>超参数β和MC采样次数T对性能影响显著（如表3），但文中未提供自动调参方案。此外，不同数据集可能需特定参数配置，限制了方法的即插即用性。</p>
-</li>
-<li><p>dropout变分推断是什么意思，我的理解是测试的时候也用dropout, 只是换了种解释方法</p>
 </li>
 </ul>
 ]]></content>
@@ -447,8 +245,8 @@
         <category>论文阅读</category>
       </categories>
       <tags>
-        <tag>论文阅读</tag>
-        <tag>Test-Time Adaptation（TTA）</tag>
+        <tag>大模型理解</tag>
+        <tag>神经元</tag>
       </tags>
   </entry>
   <entry>
@@ -597,79 +395,128 @@
       </tags>
   </entry>
   <entry>
-    <title>Visual Adversarial Examples的论文阅读</title>
-    <url>/posts/542407868/</url>
-    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
+    <title>MM-SafetyBench的论文阅读</title>
+    <url>/posts/2910022633/</url>
+    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
 <blockquote>
-<p>Visual Adversarial Examples Jailbreak Aligned Large Language Models 论文学习</p>
+<p>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models 论文学习</p>
 </blockquote>
 <span id="more"></span>
-<h2 id="Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models"><a href="#Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models" class="headerlink" title="Visual Adversarial Examples Jailbreak Aligned Large Language Models"></a>Visual Adversarial Examples Jailbreak Aligned Large Language Models</h2><blockquote>
-<p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
-<p><a href="https://arxiv.org/pdf/2306.13213">文章链接</a></p>
-<p><a href="https://github.com/Unispac/Visual-Adversarial-Examples-Jailbreak-Large-Language-Models">论文代码</a></p>
-</blockquote>
+<h2 id="MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models"><a href="#MM-SafetyBench-A-Benchmark-for-Safety-Evaluation-of-Multimodal-Large-Language-Models" class="headerlink" title="MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models"></a>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</h2><p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
+<p><a href="https://arxiv.org/pdf/2311.17600">原文链接</a></p>
 <h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
-<p><strong>对抗性样本</strong>：</p>
-<ul>
-<li>对抗性样本是指在原始数据上添加特定的干扰，这个干扰是像素级别的修改，人几乎看不出来变化，但是会对模型产生误导</li>
-<li>一般是基于梯度来生成，使之损失变大</li>
-</ul>
-<p><strong>红队攻击（Red-teaming）</strong>：</p>
-<p>在AI和机器学习中，红队攻击指的是通过模拟恶意用户的行为，主动寻找并利用模型的潜在弱点</p>
+<h4 id="1-1视觉模块和语言模块连接方式"><a href="#1-1视觉模块和语言模块连接方式" class="headerlink" title="1.1视觉模块和语言模块连接方式"></a>1.1视觉模块和语言模块连接方式</h4><ol>
+<li><strong>线性投影</strong>：使用线性投影将视觉标记 (visual tokens) 的维度与文本标记 (text tokens) 的维度对齐</li>
+<li><strong>可学习的查询</strong>：使用可学习的查询来提取与文本相关的视觉信息，并固定视觉标记的长度。</li>
+<li><strong>利用Few-shot</strong>: 利用few-shot使模形快速适应新的任务</li>
+</ol>
 <h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
-<p>此文在多模态大模型的产生下，提出了对抗性攻击，这种攻击通过改变图片中的像素，来进行攻击，这种攻击被证明是非常有效的。与此同时，这种对抗性攻击，还有通用性，对绝大多数的对齐模型都能迁移起作用。最后还展望了对其他种类模态信息的探究。</p>
+<p>此文出于对多模态大模型很容易被破坏的缘故，提出了MM SafetyBench数据集，用于对MLLM进行安全评估，总共有13个场景，5040个文本图像对。还提出用用扩散模型和排版生成的图像，来创建图像提示，以绕过MLLM中的安全性防御机制</p>
 <h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
-<p><strong>革命</strong>：最近人们将视觉融合到LLM中的兴趣激增，导致VLM的出现。</p>
-<p><strong>复杂性</strong>：然而，多模态模型增加了模型的复杂度和攻击面，这对于确保模型的安全性和可靠性构成了挑战。</p>
+<ul>
+<li><strong>差距</strong>：LLM的安全问题得到了广泛讨论，还有安全对齐的措施，但是MLLM的安全问题仍然研究不足</li>
+<li><strong>评估</strong>：缺乏一个较好的数据集对MLLM进行安全性评估</li>
+<li><strong>动机</strong>：当图片与文字相关时，模型会激活视觉模块，这一模块，通常没有进行安全性对齐；当两者不相关的时候，语言模块占据主导地位，导致攻击失败</li>
+</ul>
 <h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
-<p><strong>视觉输入</strong>：因为视觉输入的连续性和高维性，使之成为对抗攻击的薄弱之处</p>
-<p><strong>白盒攻击</strong>：知道模型权重，便于进行生成对抗性样本</p>
-<p><strong>黑盒攻击</strong>：不知道模型权重，但是这个攻击可以在多个模型之间移植，实现全面性，实现更加通用的攻击</p>
-<p><strong>对抗性样本</strong>：针对的并不是一种特殊的指令，而是一种通用的指令，能够使绝大多数有害文本可以得到输出</p>
-<p><strong>对抗性样本构建方式</strong>：</p>
-<ul>
-<li><p>攻击的目的是构建一个对抗性输入 <script type="math/tex">x_{\text{adv}}</script>，使模型在给定 <script type="math/tex">x_{\text{adv}}</script>时，倾向于生成一些有害内容 Y=<script type="math/tex">\{y_i\}_{i=1}^m</script>​</p>
-</li>
-<li><p>Y是一个小型语料库，其中包含一些有害的语句，这些语句会用来指导攻击</p>
-</li>
-<li><p>通过调整<script type="math/tex">x_{\text{adv}}</script>来最大化模型生成有害内容的概率</p>
-</li>
-<li><p>对于每个有害语句 <script type="math/tex">y_i</script>，它的生成概率用 <script type="math/tex">p(y_i \mid x_{\text{adv}})</script> 表示。通过取负对数<script type="math/tex">(−log)</script>​，问题变成了最小化目标函数</p>
-</li>
-<li><p>而且优化的过程受限于一个空间<strong><em>B</em></strong>，这个空间是用来让图片尽可能看起来正常</p>
-<p><img src="https://s2.loli.net/2024/11/24/YBXuqJTO9rfK8jF.png" style="zoom: 50%;" /></p>
-</li>
-<li><p>最后再将 <script type="math/tex">x_{\text{adv}}</script>和 <script type="math/tex">x_{\text{harm}}</script>​一起送入模型</p>
-</li>
+<h4 id="4-1-有效性"><a href="#4-1-有效性" class="headerlink" title="4.1 有效性"></a>4.1 有效性</h4><p>当使用图像文本对的时候，对MLLM的攻击显得就很有效</p>
+<p><img src="https://s2.loli.net/2024/11/23/LSlDt9MCFVzocag.png" alt=""></p>
+<h4 id="4-2-数据集的构建"><a href="#4-2-数据集的构建" class="headerlink" title="4.2 数据集的构建"></a>4.2 数据集的构建</h4><ol>
+<li><strong>生成问题</strong>：使用 GPT-4 来生成问题，而且一个问题对应的是三个图像</li>
+<li><strong>提取关键短语</strong>：<ul>
+<li>首先，有两种不同的场景<ul>
+<li>每个问题都包含一个有害短语</li>
+<li>每个问题都包含一个政治话题</li>
 </ul>
-<p><strong>文本对抗攻击</strong></p>
-<ul>
-<li>将视觉对抗性嵌入替换为具有相等长度的文本对抗性标记</li>
-<li>文本攻击的开销更大，因为文本在其空间更加离散，所以导致计算需求更高</li>
+</li>
+<li>然后提取之后用于第三步，图像的生成</li>
 </ul>
+</li>
+<li><strong>查询到图像的转换</strong>：<ul>
+<li>基于扩散模型</li>
+<li>排版图形，使用Pillow，来对图像进行绘图</li>
+<li>扩散模型+排版图形，将两者连接在一起，扩散模型在上面，排版图形在下面</li>
+</ul>
+</li>
+<li><strong>问题的改写</strong>：根据第一步的问题和第三步生成的图片进行改写生成新的问题</li>
+</ol>
+<h4 id="4-3-模型的评估"><a href="#4-3-模型的评估" class="headerlink" title="4.3 模型的评估"></a>4.3 模型的评估</h4><ol>
+<li>将场景分为三个类别，不同的类别，认为安全的方式不同<ul>
+<li>对于一些类别，如非法活动，不包含任何有害内容，则认为是安全的</li>
+<li>还有有些类别，如政治话题，不响应则认为是安全的</li>
+<li>最后的一些类别，如法律医疗领域，包含免责声明和风险警告则是安全的</li>
+</ul>
+</li>
+<li>利用ASR，平均攻击成功率来评估模型</li>
+<li>利用RR，拒绝率，来反映模型是否准确的识别到恶意查询，并做出拒绝</li>
+</ol>
 <h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
-<p><strong>评估</strong></p>
-<ul>
-<li><p>三种形式，无对抗性信息，对抗性图像，对抗性文本，且从图中可以看出来，对图像施以越强的对抗，效果越好</p>
-<p><img src="https://s2.loli.net/2024/11/23/fgjypQZhNrX4AMu.png" alt=""></p>
-</li>
-<li><p>用分类器计算毒性属性分数，范围从0到1，对每个对于每个属性，我们计算分数超过0.5阈值的生成文本的比率，并且重复三次</p>
-</li>
-</ul>
-<p><strong>分析攻击</strong></p>
-<ul>
-<li>原来提出的一些削弱攻击的方法不再行之有效，例如对抗性训练 (将对抗性样本作为训练数据) ，因为现在的输出是开放的，与狭义的分类形成对比。而且现在的对抗性干扰不一定是不可察觉的，因此，这些防御所假设的小扰动界限不再适用。</li>
-<li>但是通过向图像之中引入噪声能够在一定程度上中和对抗性攻击</li>
-</ul>
+<p><strong>模型设置</strong>：评估了最近发布的12种模型</p>
+<p><strong>实验方式</strong>：使用排版，扩散，基线等方式</p>
 <h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
 <ul>
-<li>传统的对纯文本输入输出的LLM的越狱攻击的难度比较大，因为文本是离散型的。在引入视觉机制后，对系统的越狱攻击就变得比较简单。</li>
-<li>对抗性攻击，通过对图像的改变，来进行攻击是有效的</li>
+<li><strong>safety prompt</strong>：提出了safety prompt，使模型能够更好的抵御攻击，这一结果是建立在模型能够遵循指令的条件下</li>
+<li><strong>扩散+排版</strong>大多数情况下效果最好，相比于基线还有单纯的用基线和排版</li>
+<li>没有一个模型能够做到<strong>安全性和智能性</strong>的平衡，详细说来，则是有些模型看似安全实则无法正确做出相应</li>
+<li>附录中还对MLLM Protector做了对比，发现 Safety prompt 即激发自主的安全防御更有效</li>
 </ul>
-<h3 id="7-未来思考"><a href="#7-未来思考" class="headerlink" title="7. 未来思考"></a>7. 未来思考</h3><ul>
-<li>多模态的出现，推测其他模态的信息比如语音等，也存在这样的跨模态攻击</li>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts</strong></p>
+<ul>
+<li>介绍FigStep算法，通过将有害指令转换为图像来对VLM进行攻击，并且证明出在具有OCR功能的GPT-4V上也有较高攻击率。</li>
 </ul>
+<p><strong>MM-SafetyBench: A Benchmark for Safety Evaluation of Multimodal Large Language Models</strong></p>
+<ul>
+<li>提出MM-SafetyBench数据集，用来评估多模态大模型，发现其容易受到图文结合的攻击，特别是与文字相关的图片，最后还提出了可以引入安全提示减少攻击成功率。</li>
+</ul>
+<p><strong>Visual Adversarial Examples Jailbreak Aligned Large Language Models</strong></p>
+<ul>
+<li>主要是从对抗性样本上面出发，发现其可以绕开VLM的安全防御，使模形能够生成与训练无关的有害内容，还解锁了模型被禁止的能力。</li>
+</ul>
+<p><strong>对比</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Visual Adversarial Examples (2023.8)</th>
+<th style="text-align:center">FigStep (2023.12)</th>
+<th style="text-align:center">MM-SafetyBench (2024.6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>研究对象</strong></td>
+<td style="text-align:center">VLM</td>
+<td style="text-align:center">VLM</td>
+<td style="text-align:center">MLLM(但主要还是针对VLM)</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>方法特点</strong></td>
+<td style="text-align:center">对抗性图片</td>
+<td style="text-align:center">图形化有害文字</td>
+<td style="text-align:center">文本+图片 (扩散+排版)</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>创新点</strong></td>
+<td style="text-align:center">强调对抗性样本的通用性</td>
+<td style="text-align:center">简单的图形化文字的攻击</td>
+<td style="text-align:center">提出安全评估基准</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>研究模型范围</strong></td>
+<td style="text-align:center">GPT-4V和LLaVA</td>
+<td style="text-align:center">6种VLM+GPT-4V</td>
+<td style="text-align:center">12种开源MLLM</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>评估方法</strong></td>
+<td style="text-align:center">人工检查与黑盒传递性验证</td>
+<td style="text-align:center">SafeBench基准测试</td>
+<td style="text-align:center">MM SafetyBench数据集(13个场景，5040个文本图像对)</td>
+</tr>
+</tbody>
+</table>
+</div>
 ]]></content>
       <categories>
         <category>论文阅读</category>
@@ -930,31 +777,156 @@
       </tags>
   </entry>
   <entry>
-    <title>消除参考文献中未用的文献</title>
-    <url>/posts/717737966/</url>
-    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
+    <title>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</title>
+    <url>/posts/3200710163/</url>
+    <content><![CDATA[<p>​    <img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt="image.png" style="zoom: 60%;" />          </p>
 <blockquote>
-<p>消除参考文献中未用的文献</p>
+<p>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</p>
 </blockquote>
 <span id="more"></span>
+<h1 id="TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION"><a href="#TEST-TIME-ADAPTATION-FOR-IMAGE-COMPRESSION-WITH-DISTRIBUTION-REGULARIZATION" class="headerlink" title="TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION"></a>TEST-TIME ADAPTATION FOR IMAGE COMPRESSION WITH DISTRIBUTION REGULARIZATION</h1><h2 id="1-背景知识"><a href="#1-背景知识" class="headerlink" title="1. 背景知识"></a>1. 背景知识</h2><ul>
+<li><p>现有基于先验的熵模型在跨域场景中因分布偏移导致联合概率分布不准确，进而影响性能。</p>
 <ul>
-<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
+<li><strong>先验（Hyperprior）</strong>：先验是一种用于图像压缩的模型，它通过引入一个额外的先验概率模型来捕获潜在表示中的空间依赖性。这个先验模型通常用于编码潜在表示的尺度信息，从而提高压缩效率。</li>
+<li><strong>熵模型</strong>：熵模型用于估计潜在表示的分布，以便进行有效的熵编码。在基于超先验的模型中，熵模型通常假设潜在表示的元素是独立的，但实际上这些元素之间可能存在统计依赖性。</li>
+</ul>
 </li>
-<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
+<li><p>传统联合优化潜在变量和辅助信息的方法（如HLR）在域内有效，但在跨域任务中因概率分布失配导致码率显著增加。</p>
+<ul>
+<li><p>在跨域任务中，由于训练数据和测试数据的分布不同，潜在变量和辅助信息的概率分布也会发生变化。例如，自然图像和屏幕内容图像在统计特性上存在显著差异。当模型在自然图像上训练后，其潜在变量和辅助信息的概率分布是基于自然图像的特性学习的。然而，当模型应用于屏幕内容图像时，这些概率分布不再适用，导致模型无法准确地编码潜在变量和辅助信息。</p>
+<p><img src="https://s2.loli.net/2025/10/23/JqwKfdPGbIn3Re7.png" alt=""></p>
 </li>
-<li><p>然后使用bibtool工具，使用下面代码</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
+</ul>
 </li>
-<li><p>便可以得到新的精简之后的文件</p>
+</ul>
+<h2 id="2-研究方法"><a href="#2-研究方法" class="headerlink" title="2. 研究方法"></a>2. 研究方法</h2><h3 id="边缘化近似角度揭示降解原因"><a href="#边缘化近似角度揭示降解原因" class="headerlink" title="边缘化近似角度揭示降解原因"></a>边缘化近似角度揭示降解原因</h3><ul>
+<li><strong>边缘化近似</strong>：在图像压缩中，边缘化近似是指通过将联合概率分布 <em>p</em>(<em>y</em>,<em>z</em>) 近似为边缘概率分布 <em>p</em>(<em>y</em>) 和 <em>p</em>(<em>z</em>) 的乘积，来简化模型的计算。其中，<em>y</em> 表示潜在变量，<em>z</em> 表示超先验中的侧信息。</li>
+<li><strong>降解原因</strong>：在跨域场景中，由于源域和目标域之间的分布差异，基于超先验的熵模型无法准确地捕获潜在变量和侧信息的联合概率分布。这导致了边缘化近似的不准确，进而影响了码率（Rate）和重构质量（Distortion）的权衡（R-D性能）。具体来说，模型在编码潜在变量和侧信息时需要更多的比特来表示这些变量，从而导致码率显著增加</li>
+</ul>
+<h4 id="分布正则化方法"><a href="#分布正则化方法" class="headerlink" title="分布正则化方法"></a>分布正则化方法</h4><ul>
+<li><p>分布正则化通过对模型参数引入先验分布，分布正则化通过鼓励学习更好的联合概率近似，来减少跨域场景中的额外率消耗。</p>
+</li>
+<li><p>例如，通过分布正则化，可以调整潜在变量的分布，使其更接近目标域的分布，从而在跨域压缩中实现更好的率失真性能。</p>
+<ul>
+<li>zmt：表示在第 <em>m</em> 次迭代中更新的<strong>超先验</strong>（hyperprior）中的<strong>侧信息</strong>（side information）。侧信息 <em>z</em> 是从潜在变量 <em>y</em> 中提取的，用于帮助编码和解码过程。在跨域任务中，由于分布偏移，<em>z</em> 的概率分布可能与训练时的分布不同，导致编码效率下降。</li>
+<li>ymt：表示在第 <em>m</em> 次迭代中更新的<strong>潜在变量</strong>。潜在变量 <em>y</em> 是图像经过编码器变换后的表示，用于捕获图像的重要特征。在跨域任务中，由于分布偏移，<em>y</em> 的概率分布也可能与训练时的分布不同，导致编码效率下降。</li>
+</ul>
+</li>
+<li><h3 id="β-的作用"><a href="#β-的作用" class="headerlink" title="β 的作用"></a>β 的作用</h3><ul>
+<li><strong>控制正则化强度</strong>：<em>β</em> 用于控制正则化项 −log<em>p</em>(<em>z<strong>m</strong>t</em>∣<em>y<strong>m</strong>t</em>) 在总损失函数中的权重。较大的 <em>β</em> 值会增加正则化项的影响，从而更严格地限制模型的复杂度，有助于防止过拟合。</li>
+<li><strong>平衡模型复杂度和泛化能力</strong>：通过调整 <em>β</em>，可以平衡模型的复杂度和泛化能力。较小的 <em>β</em> 值可能会导致模型过拟合，而较大的 <em>β</em> 值可能会导致模型欠拟合。</li>
+<li>最好0.1</li>
+</ul>
+</li>
+</ul>
+<h4 id="Dropout变分推断"><a href="#Dropout变分推断" class="headerlink" title="- Dropout变分推断"></a>- Dropout变分推断</h4><ul>
+<li>文章利用dropout变分推断（DVI）作为贝叶斯近似，来估计潜在变量的后验分布。通过多次蒙特卡洛（MC）采样，估计后验分布的均值和方差，从而实现对潜在变量的优化。</li>
+<li>例如，DVI通过随机丢弃神经元的方式，模拟潜在变量的不确定性，为潜在变量的优化提供了更准确的估计。</li>
+</ul>
+<h2 id="3-实验与结果"><a href="#3-实验与结果" class="headerlink" title="3. 实验与结果"></a>3. 实验与结果</h2><h3 id="3-1-数据集"><a href="#3-1-数据集" class="headerlink" title="3.1 数据集"></a>3.1 数据集</h3><ul>
+<li>文章使用了六个不同的数据集，包括自然图像（Kodak）、屏幕内容图像（SIQAD、SCID、CCT）、像素风格游戏图像和绘画图像（DomainNet）</li>
+</ul>
+<h3 id="3-3-性能评估"><a href="#3-3-性能评估" class="headerlink" title="3.3 性能评估"></a>3.3 性能评估</h3><h4 id="3-3-1-R-D曲线与BD-rate"><a href="#3-3-1-R-D曲线与BD-rate" class="headerlink" title="3.3.1 R-D曲线与BD-rate"></a>3.3.1 R-D曲线与BD-rate</h4><ul>
+<li>通过计算不同方法的峰值信噪比（PSNR）和每像素比特数（bpp），绘制R-D曲线，并计算（BD-rate）来评估性能。BD-rate越低，表示性能越好。</li>
+</ul>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li><p>超参数β和MC采样次数T对性能影响显著（如表3），但文中未提供自动调参方案。此外，不同数据集可能需特定参数配置，限制了方法的即插即用性。</p>
+</li>
+<li><p>dropout变分推断是什么意思，我的理解是测试的时候也用dropout, 只是换了种解释方法</p>
 </li>
 </ul>
 ]]></content>
       <categories>
-        <category>教程</category>
+        <category>论文阅读</category>
       </categories>
       <tags>
-        <tag>论文</tag>
-        <tag>教程</tag>
+        <tag>论文阅读</tag>
+        <tag>Test-Time Adaptation（TTA）</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Adversarial Examples的论文阅读</title>
+    <url>/posts/542407868/</url>
+    <content><![CDATA[<p><img src="https://s2.loli.net/2024/11/25/wrEodCjUzDWuhBl.png" alt=""></p>
+<blockquote>
+<p>Visual Adversarial Examples Jailbreak Aligned Large Language Models 论文学习</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models"><a href="#Visual-Adversarial-Examples-Jailbreak-Aligned-Large-Language-Models" class="headerlink" title="Visual Adversarial Examples Jailbreak Aligned Large Language Models"></a>Visual Adversarial Examples Jailbreak Aligned Large Language Models</h2><blockquote>
+<p>更多大模型安全相关以及机器学习相关的文章见主页<br><a href="https://y-icecloud.github.io/">https://y-icecloud.github.io/</a></p>
+<p><a href="https://arxiv.org/pdf/2306.13213">文章链接</a></p>
+<p><a href="https://github.com/Unispac/Visual-Adversarial-Examples-Jailbreak-Large-Language-Models">论文代码</a></p>
+</blockquote>
+<h3 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h3><hr>
+<p><strong>对抗性样本</strong>：</p>
+<ul>
+<li>对抗性样本是指在原始数据上添加特定的干扰，这个干扰是像素级别的修改，人几乎看不出来变化，但是会对模型产生误导</li>
+<li>一般是基于梯度来生成，使之损失变大</li>
+</ul>
+<p><strong>红队攻击（Red-teaming）</strong>：</p>
+<p>在AI和机器学习中，红队攻击指的是通过模拟恶意用户的行为，主动寻找并利用模型的潜在弱点</p>
+<h3 id="2-论文大体介绍"><a href="#2-论文大体介绍" class="headerlink" title="2. 论文大体介绍"></a>2. 论文大体介绍</h3><hr>
+<p>此文在多模态大模型的产生下，提出了对抗性攻击，这种攻击通过改变图片中的像素，来进行攻击，这种攻击被证明是非常有效的。与此同时，这种对抗性攻击，还有通用性，对绝大多数的对齐模型都能迁移起作用。最后还展望了对其他种类模态信息的探究。</p>
+<h3 id="3-论文背景"><a href="#3-论文背景" class="headerlink" title="3. 论文背景"></a>3. 论文背景</h3><hr>
+<p><strong>革命</strong>：最近人们将视觉融合到LLM中的兴趣激增，导致VLM的出现。</p>
+<p><strong>复杂性</strong>：然而，多模态模型增加了模型的复杂度和攻击面，这对于确保模型的安全性和可靠性构成了挑战。</p>
+<h3 id="4-方法原理"><a href="#4-方法原理" class="headerlink" title="4. 方法原理"></a>4. 方法原理</h3><hr>
+<p><strong>视觉输入</strong>：因为视觉输入的连续性和高维性，使之成为对抗攻击的薄弱之处</p>
+<p><strong>白盒攻击</strong>：知道模型权重，便于进行生成对抗性样本</p>
+<p><strong>黑盒攻击</strong>：不知道模型权重，但是这个攻击可以在多个模型之间移植，实现全面性，实现更加通用的攻击</p>
+<p><strong>对抗性样本</strong>：针对的并不是一种特殊的指令，而是一种通用的指令，能够使绝大多数有害文本可以得到输出</p>
+<p><strong>对抗性样本构建方式</strong>：</p>
+<ul>
+<li><p>攻击的目的是构建一个对抗性输入 <script type="math/tex">x_{\text{adv}}</script>，使模型在给定 <script type="math/tex">x_{\text{adv}}</script>时，倾向于生成一些有害内容 Y=<script type="math/tex">\{y_i\}_{i=1}^m</script>​</p>
+</li>
+<li><p>Y是一个小型语料库，其中包含一些有害的语句，这些语句会用来指导攻击</p>
+</li>
+<li><p>通过调整<script type="math/tex">x_{\text{adv}}</script>来最大化模型生成有害内容的概率</p>
+</li>
+<li><p>对于每个有害语句 <script type="math/tex">y_i</script>，它的生成概率用 <script type="math/tex">p(y_i \mid x_{\text{adv}})</script> 表示。通过取负对数<script type="math/tex">(−log)</script>​，问题变成了最小化目标函数</p>
+</li>
+<li><p>而且优化的过程受限于一个空间<strong><em>B</em></strong>，这个空间是用来让图片尽可能看起来正常</p>
+<p><img src="https://s2.loli.net/2024/11/24/YBXuqJTO9rfK8jF.png" style="zoom: 50%;" /></p>
+</li>
+<li><p>最后再将 <script type="math/tex">x_{\text{adv}}</script>和 <script type="math/tex">x_{\text{harm}}</script>​一起送入模型</p>
+</li>
+</ul>
+<p><strong>文本对抗攻击</strong></p>
+<ul>
+<li>将视觉对抗性嵌入替换为具有相等长度的文本对抗性标记</li>
+<li>文本攻击的开销更大，因为文本在其空间更加离散，所以导致计算需求更高</li>
+</ul>
+<h3 id="5-实验设置"><a href="#5-实验设置" class="headerlink" title="5. 实验设置"></a>5. 实验设置</h3><hr>
+<p><strong>评估</strong></p>
+<ul>
+<li><p>三种形式，无对抗性信息，对抗性图像，对抗性文本，且从图中可以看出来，对图像施以越强的对抗，效果越好</p>
+<p><img src="https://s2.loli.net/2024/11/23/fgjypQZhNrX4AMu.png" alt=""></p>
+</li>
+<li><p>用分类器计算毒性属性分数，范围从0到1，对每个对于每个属性，我们计算分数超过0.5阈值的生成文本的比率，并且重复三次</p>
+</li>
+</ul>
+<p><strong>分析攻击</strong></p>
+<ul>
+<li>原来提出的一些削弱攻击的方法不再行之有效，例如对抗性训练 (将对抗性样本作为训练数据) ，因为现在的输出是开放的，与狭义的分类形成对比。而且现在的对抗性干扰不一定是不可察觉的，因此，这些防御所假设的小扰动界限不再适用。</li>
+<li>但是通过向图像之中引入噪声能够在一定程度上中和对抗性攻击</li>
+</ul>
+<h3 id="6-实验结论"><a href="#6-实验结论" class="headerlink" title="6. 实验结论"></a>6. 实验结论</h3><hr>
+<ul>
+<li>传统的对纯文本输入输出的LLM的越狱攻击的难度比较大，因为文本是离散型的。在引入视觉机制后，对系统的越狱攻击就变得比较简单。</li>
+<li>对抗性攻击，通过对图像的改变，来进行攻击是有效的</li>
+</ul>
+<h3 id="7-未来思考"><a href="#7-未来思考" class="headerlink" title="7. 未来思考"></a>7. 未来思考</h3><ul>
+<li>多模态的出现，推测其他模态的信息比如语音等，也存在这样的跨模态攻击</li>
+</ul>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>论文阅读</tag>
+        <tag>深度学习</tag>
+        <tag>大模型安全</tag>
       </tags>
   </entry>
   <entry>
@@ -1017,6 +989,34 @@
       </categories>
       <tags>
         <tag>生活</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>消除参考文献中未用的文献</title>
+    <url>/posts/717737966/</url>
+    <content><![CDATA[<p>​                          <img src="https://s2.loli.net/2025/09/26/KlO3JnGwZbD4kLj.webp" alt="image.png" style="zoom: 15%;" />          </p>
+<blockquote>
+<p>消除参考文献中未用的文献</p>
+</blockquote>
+<span id="more"></span>
+<ul>
+<li><p>首先点击overleaf中里面的输出日志的.aux文件</p>
+</li>
+<li><p>然后在windows环境下面需要使用Cygwin64 Terminal</p>
+</li>
+<li><p>然后使用bibtool工具，使用下面代码</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">bibtool -<span class="attribute">x</span> output<span class="selector-class">.aux</span> -<span class="selector-tag">i</span> output<span class="selector-class">.bib</span> -o pruned<span class="selector-class">.bib</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>便可以得到新的精简之后的文件</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>论文</tag>
       </tags>
   </entry>
 </search>
