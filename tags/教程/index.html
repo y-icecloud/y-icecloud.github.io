@@ -451,44 +451,60 @@
 <div>
     <!--自定义文章访问量统计-->
     <script>
-        // 等待页面加载完成后执行
+        // 等待不蒜子脚本加载完成
+        function waitForBusuanzi() {
+            if (typeof busuanzi !== 'undefined') {
+                loadPostViews();
+            } else {
+                setTimeout(waitForBusuanzi, 100);
+            }
+        }
+        
         function loadPostViews() {
             // 查找所有文章访问量元素
             const postViewElements = document.querySelectorAll('[id^="busuanzi_value_page_pv_posts_"]');
             
             postViewElements.forEach(element => {
-                // 先显示一个默认值，然后等待不蒜子更新
-                element.textContent = '0';
+                const postId = element.id.replace('busuanzi_value_page_pv_', '');
+                const postPath = '/' + postId.replace(/_/g, '/') + '/';
                 
-                // 为每个元素添加一个定时器，定期检查不蒜子是否已经更新
-                const checkInterval = setInterval(() => {
-                    // 检查是否有不蒜子的数据
-                    if (element.textContent !== '0' && element.textContent !== '') {
-                        clearInterval(checkInterval);
-                    } else {
-                        // 尝试从不蒜子的全局变量中获取数据
-                        if (typeof busuanzi !== 'undefined' && busuanzi.site_pv) {
-                            element.textContent = busuanzi.site_pv;
-                            clearInterval(checkInterval);
-                        }
-                    }
-                }, 1000);
+                // 创建临时的script标签来调用不蒜子API
+                const script = document.createElement('script');
+                script.src = `https://busuanzi.ibruce.info/busuanzi?jsonpCallback=busuanziCallback_${postId}&url=${encodeURIComponent(window.location.origin + postPath)}`;
                 
-                // 10秒后停止检查
+                // 创建全局回调函数
+                window[`busuanziCallback_${postId}`] = function(data) {
+                    element.textContent = data.site_pv || '0';
+                    // 清理script标签
+                    document.head.removeChild(script);
+                    // 清理全局函数
+                    delete window[`busuanziCallback_${postId}`];
+                };
+                
+                // 添加到页面
+                document.head.appendChild(script);
+                
+                // 设置超时
                 setTimeout(() => {
-                    clearInterval(checkInterval);
-                    if (element.textContent === '0' || element.textContent === '') {
+                    if (element.textContent === '' || element.textContent === '0') {
                         element.textContent = '0';
                     }
-                }, 10000);
+                    // 清理
+                    if (document.head.contains(script)) {
+                        document.head.removeChild(script);
+                    }
+                    if (window[`busuanziCallback_${postId}`]) {
+                        delete window[`busuanziCallback_${postId}`];
+                    }
+                }, 5000);
             });
         }
         
-        // 页面加载完成后开始执行
+        // 页面加载完成后开始等待不蒜子
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadPostViews);
+            document.addEventListener('DOMContentLoaded', waitForBusuanzi);
         } else {
-            loadPostViews();
+            waitForBusuanzi();
         }
     </script>
 </div>
